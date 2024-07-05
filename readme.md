@@ -15,7 +15,62 @@ This is my DevOps - Repo. This serves as my Playground, Portfolio, Research-Note
 - RateLimiting, realtime threat-detection & Vulnabillity-Scanning 
 
 ---
+## Project Structure
+***--> This is just a roadmap***
+- we trigger jenkins jobs using changesets, hence we need to provide a filestructure to make this simpler
+```yaml
+/my-iac-project
+├── .gitignore
+├── README.md
+├── terraform
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   └── modules
+│       ├── k8s
+│       │   ├── main.tf
+│       │   ├── variables.tf
+│       │   └── outputs.tf
+│       └── cassandra
+│           ├── main.tf
+│           ├── variables.tf
+│           └── outputs.tf
+├── jenkins
+│   ├── Jenkinsfile
+│   └── pipeline-scripts
+│       ├── build-script.sh
+│       └── deploy-script.sh
+├── grpc
+│   ├── proto
+│   │   └── myservice.proto
+│   └── src
+│       └── myservice
+│           ├── myservice_server.go
+│           └── myservice_client.go
+└── frontend
+    ├── public
+    ├── src
+    │   ├── App.js
+    │   └── index.js
+    ├── package.json
+    └── yarn.lock
+```
+---
+## Release Management
+***successfull Production-Commits will be pushed to `release-candidate` Branch***
+Release-Window =
 
+| Phase | Description | Branch | Frequency | Crontab Time |
+|---|---|---|---|---|
+| Development | Commits trigger Jenkins CI-CD pipeline | production | On demand | 0 0 0 0 0 |
+| Compliance and Security | Compliance Checks, IAM Policy Validation, Network Policy Enforcement, Topology Verification | test | Every 4 hours | 0 */4 * * * |
+| WebSecurity | Running Web and Application Security Tests to avoid hacks like xss | test | Every 4 hours | 0 */4 * * * |
+| Integration | Executing Integration Tests to ensure all components interact correctly | test | 16:00 and 23:00 daily | 0 16,23 * * * |
+| Build | Building the final version of the application for release | release-candidate | 23:00 daily | 0 23 * * * |
+| Release | Deploying the built application to production | production | 24:00 daily | 0 0 * * * |
+
+
+---
 ## CI-CD Pipeline
 ### Basis Infrastructure Deployment
 - we initialize our k8s cluster, branches, set up our monoliths and install our tools
@@ -42,6 +97,34 @@ This is my DevOps - Repo. This serves as my Playground, Portfolio, Research-Note
 
 ### Test 
 >  Triggered by pushing into Test-Branch
+- Sast,Dast,CodeQl, Ivy,KubeBench,Checkov
+- e2e and other advanced test will run on seperated testing job
+  
+
+
+- sending pull Request Testing->Main/Production Branch
+- awaiting manual Approval
+### Deploy
+> based on parameters & Infrastructure
+
+  
+### Monitoring & Feedback
+- telemtry & logs
+	- kafka
+	- OpenTelemetry
+- devSecOps:
+	- Suricata
+	- Snort
+	- OSSEC
+	- Falco
+
+
+---
+
+## Notes
+
+- first approach for cicd testing stage:
+  
 ```mermaid
 graph TB
 
@@ -112,6 +195,7 @@ subgraph "Integration"[
 		<h4>Integration Test</h4>
 		<ul style="text-align: left;margin-left: 15px;list-style: square; line-height: 0.4;"> 
 		<li>e2e/Cross-Browser- und Cross-Device</li>
+		<li>test container for API,DB,etc</li>
 		<ul style="text-align: left;margin-left: 15px;list-style: square; line-height: 0.4;"> 
 <li>k8s E2E Framework</li>
 <li>Cypress</li>
@@ -173,22 +257,3 @@ Configuration-->Authorisation&Policy-Tests
 
 Resources-->Integration
 ```
-
-- sending pull Request Testing->Main/Production Branch
-- awaiting manual Approval
-### Deploy
-> based on parameters & Infrastructure
-
-  
-### Monitoring & Feedback
-- telemtry & logs
-	- kafka
-	- OpenTelemetry
-- devSecOps:
-	- Suricata
-	- Snort
-	- OSSEC
-	- Falco
-
-
----
