@@ -1,13 +1,13 @@
 # DevOps
 This is my DevOps - Repo. This serves as my Playground, Portfolio, Research-Notes, Cheat-Sheet and Guide. 
 
-
-
-
 ---
-## Release Management & Test Scheduling
+
+## 2. The Pod Shop
+![POD SHOP](https://github.com/ji-podhead/DevOps/blob/main/pod-shop-infrastructure.png?raw=true)
+---
+### Release Management & Test Scheduling
 ***successfull Production-Commits will be pushed to `release-candidate` Branch***
-Release-Window =
 
 | Phase | Description | Branch | Frequency | Crontab Time |
 |---|---|---|---|---|
@@ -21,81 +21,7 @@ Release-Window =
 | Release | Deploying the built application to production | production & release | 24:00 daily | 0 0 * * * |
 
 ---
-### IAC Basis Infrastructure Deployment
-<li>we initialize our project,fs, k8s cluster, branches, set up our monoliths and install our tools</li>
-	<li>we configure,set up and install, ingress,helm charts & dashboards, host- names&mapping, dns, firewall, persistent storage, db, gRPC-Server, react app,
-<li>initial compliance and security test</li>
-
-```mermaid
-graph TB
-
-subgraph "basis"[
-<div style="text-align: center;margin-left: 15px; line-height: 0.4;">
-		<h4>Frontend</h4>
-		<ul style="text-align: left;margin-left: 15px;list-style: square; line-height: 0.4;">
-		
-</ul>
-</div>
-]
-end
-
----
-## CI-CD Pipeline
-
-
-```
-
-### 
-- 
-- k8s network policies & topology 
-- user & administration
-- basis iam policies
-- ingress, dashboards, host- names&mapping, dns, firewall & persistent storage
-- ***IAC-Basis-Configuration Check*** 
-### Source Control & Integration
-> triggered by commit to Integration Branch
--  static checks before triggering pipeline 
-	- Sast, Dast & Linters
-### Build
-- IAC-Codequality & misconfiguration Checks 
-> can also be used while writing terraform code
-
-	- Chekov 
-	- trivy
-	
-- build based on parameters & multiple stages
->	not every change need to trigger every component
-
-- push into Test Branch
-
-### Test 
->  Triggered by pushing into Test-Branch
-- Sast,Dast,CodeQl, Ivy,KubeBench,Checkov
-- e2e and other advanced test will run on seperated testing job
-  
-
-
-- sending pull Request Testing->Main/Production Branch
-- awaiting manual Approval
-### Deploy
-> based on parameters & Infrastructure
-
-  
-### Monitoring & Feedback
-- telemtry & logs
-	- kafka
-	- OpenTelemetry
-- devSecOps:
-	- Suricata
-	- Snort
-	- OSSEC
-	- Falco
-
-
----
----
-
-## Project Structure
+## App Configuration Repo Structure
 ***--> This is just a roadmap***
 - we trigger jenkins jobs using changesets, hence we need to provide a filestructure to make this simpler
 ```yaml
@@ -127,13 +53,6 @@ end
 │       └── myservice
 │           ├── myservice_server.go
 │           └── myservice_client.go
-└── frontend
-    ├── public
-    ├── src
-    │   ├── App.js
-    │   └── index.js
-    ├── package.json
-    └── yarn.lock
 ```
 
 ---
