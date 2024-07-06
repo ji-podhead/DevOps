@@ -1,18 +1,7 @@
 # DevOps
 This is my DevOps - Repo. This serves as my Playground, Portfolio, Research-Notes, Cheat-Sheet and Guide. 
 
-## Topics
-- IAC with Terraform
-- CICD-serving with Jenkins
-- CI with Packer,Gitea and Github-Actions
-- CD with Argo-CD
-- Automated Security Testing
-- Virtualisation with Kubevirt
-- Monitoring & Logging with Grafana, Kafka & OpenTelemetry
-- Authorisation with Vault Github-Secrets and Oauth-Proxy
-- Streaming with NGINX RTMP Module and gRPC
-- StatefulSets, Monoliths & Microservices
-- RateLimiting, realtime threat-detection & Vulnabillity-Scanning 
+
 
 
 ---
@@ -22,12 +11,14 @@ Release-Window =
 
 | Phase | Description | Branch | Frequency | Crontab Time |
 |---|---|---|---|---|
-| Development | Commits trigger Jenkins CI-CD pipeline | production | On demand | 0 0 0 0 0 |
-| Compliance and Security | Compliance Checks, IAM Policy Validation, Network Policy Enforcement, Topology Verification | test | Every 4 hours | 0 */4 * * * |
+| Development | Commits trigger Jenkins CI-CD pipeline | production | On demand | * * * * * |
+| IAC | Scanns the App Configuration folder | test |Snyk IAC (5 per day max) and Checkov on demand |  * * * * * |
+| Compliance | Compliance Checks, IAM Policy Validation, Network Policy Enforcement, Topology Verification | test | Every 4 hours | 0 */4 * * * |
 | WebSecurity | Running Web and Application Security Tests to avoid hacks like xss | test | Every 4 hours | 0 */4 * * * |
-| Integration | Executing Integration Tests to ensure all components interact correctly | test | 16:00 and 23:00 daily | 0 16,23 * * * |
+| Integration | Executing Integration Tests (Back & Frontend) | test | 16:00 and 22:00 daily | 0 16,22 * * * |
+| Performance | Cluster-wide back- and frontend performance test  | test | 16:30 and 22:30 daily | 30 16,22 * * * |
 | Build | Building the final version of the application for release | release-candidate | 23:00 daily | 0 23 * * * |
-| Release | Deploying the built application to production | production | 24:00 daily | 0 0 * * * |
+| Release | Deploying the built application to production | production & release | 24:00 daily | 0 0 * * * |
 
 ---
 ### IAC Basis Infrastructure Deployment
@@ -148,8 +139,19 @@ end
 ---
 
 ## Notes
-
-- first approach for cicd testing stage:
+- initially planned topics and features:
+> - IAC with Terraform
+> - CICD-serving with Jenkins
+> - CI with Packer,Gitea and Github-Actions
+> - CD with Argo-CD
+> - Automated Security Testing
+> - Virtualisation with Kubevirt
+> - Monitoring & Logging with Grafana, Kafka & OpenTelemetry
+> - Authorisation with Vault Github-Secrets and Oauth-Proxy
+> - Streaming with NGINX RTMP Module and gRPC
+> - StatefulSets, Monoliths & Microservices
+> - RateLimiting, realtime threat-detection & Vulnabillity-Scanning 
+> - first approach for cicd testing stage:
   
 ```mermaid
 graph TB
