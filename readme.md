@@ -21,7 +21,7 @@ This is my DevOps Repo.
  </div>
 </div>
 
-This is my first cluster based DevOps project that includes CD-CD and gitops principles.
+This is my first cluster based DevOps project that includes CI-CD and gitops principles.
 
 - We have a simple Web App with a  forum and rtmp stream of a win95 vm that runs dooms ⛓️‍💥
 	- we use Microservices via gRPC, kubevirt for virtualisation and react as frontend
