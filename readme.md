@@ -23,11 +23,11 @@ This is my DevOps Repo.
 
 This is my first cluster based DevOps project that includes CI-CD and gitops principles.
 
-- IAC,k8s and other app configs have [their own repo](https://github.com/ji-podhead/Pod-Shop-App-Configs/blob/main/README.md) -> *gitops best practices* 
 - We have a simple Web App with a  forum and rtmp stream of a win95 vm that runs dooms ⛓️‍💥
 	- we use Microservices via gRPC, kubevirt for virtualisation and react as frontend
-- iac (app config repo) & source code is self hosted
- 	- we will use Tailscale Github Actions Integration instead of ssh and deploy to a k8s cluster that is selfhosted via proxmox
+- k8s cluster is selfhosted via proxmox
+ 	- we will use Tailscale Github Actions Integration instead of ssh to deploy to our k8s cluster 
+- IAC,k8s and other app configs have [their own repo](https://github.com/ji-podhead/Pod-Shop-App-Configs/blob/main/README.md) -> *gitops best practices* 
 - sensitive data will get managed by vault and gh secrets
 - we have an external jenkinspipeline for our test plans that get triggered via webhook and sheduled jobs in gh actions
 - we report back to github (out central "CI-CD" service 🕵️) and publish our tests and report back to github
