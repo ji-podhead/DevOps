@@ -21,6 +21,26 @@ This is my DevOps Repo.
  </div>
 </div>
 
+This is my first cluster based DevOps project that includes CD-CD and gitops principles.
+
+- We have a simple Web App with a  forum and rtmp stream of a win95 vm that runs dooms ⛓️‍💥
+	- we use Microservices via gRPC, kubevirt for virtualisation and react as frontend
+- iac (app config repo) & source code is self hosted
+ 	- we will use Tailscale Github Actions Integration instead of ssh and deploy to a k8s cluster that is selfhosted via proxmox
+- sensitive data will get managed by vault and gh secrets
+- we have an external jenkinspipeline for our test plans that get triggered via webhook and sheduled jobs in gh actions
+- we report back to github (out central "CI-CD" service 🕵️) and publish our tests and report back to github
+ 	- we use gh actions plugins like  [publish reports](https://github.com/marketplace/actions/publish-test-results) to create a status report section (including markdown summary)
+  	- we setup a bot that reports via gh and messaging service like slack      
+
+
+ 
+
+So from my understanding, there a no Best Practices for every project...
+It took me a while to get started...
+but thanks to excellent help and support from [@mkunikow](https://github.com/mkunikow) via [devops discord channel](https://discord.com/invite/devops-sre-infrastructure-419745677585940482) I could get a better understanding of modern CI-CD and how to approach my project. 
+ 
+
 
 
 
