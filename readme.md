@@ -23,6 +23,7 @@ This is my DevOps Repo.
 
 This is my first cluster based DevOps project that includes CI-CD and gitops principles.
 
+- IAC,k8s and other app configs have [their own repo](https://github.com/ji-podhead/Pod-Shop-App-Configs/blob/main/README.md) -> *gitops best practices* 
 - We have a simple Web App with a  forum and rtmp stream of a win95 vm that runs dooms ⛓️‍💥
 	- we use Microservices via gRPC, kubevirt for virtualisation and react as frontend
 - iac (app config repo) & source code is self hosted
