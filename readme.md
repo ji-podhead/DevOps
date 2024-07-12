@@ -58,16 +58,16 @@ but thanks to excellent help and support from [@mkunikow](https://github.com/mku
 ### Release Management & Test Scheduling
 ***successfull Production-Commits will be pushed to `release-candidate` Branch***
 
-| Phase | Description | Branch | Frequency | Crontab Time |
-|---|---|---|---|---|
-| Development | Commits trigger Jenkins CI-CD pipeline | production | On demand | * * * * * |
-| IAC | Scanns the App Configuration folder | test |Snyk IAC (5 per day max) and Checkov on demand |  * * * * * |
-| Compliance | Compliance Checks, IAM Policy Validation, Network Policy Enforcement, Topology Verification | test | Every 4 hours | 0 */4 * * * |
-| WebSecurity | Running Web and Application Security Tests to avoid hacks like xss | test | Every 4 hours | 0 */4 * * * |
-| Integration | Executing Integration Tests (Back & Frontend) | test | 16:00 and 22:00 daily | 0 16,22 * * * |
-| Performance | Cluster-wide back- and frontend performance test  | test | 16:30 and 22:30 daily | 30 16,22 * * * |
-| Build | Building the final version of the application for release | release-candidate | 23:00 daily | 0 23 * * * |
-| Release | Deploying the built application to production | production & release | 24:00 daily | 0 0 * * * |
+| Phase | Description | Branch | Crontab Time |
+|---|---|---|---|
+| Development | Commits trigger Jenkins CI-CD pipeline | production | * * * * * |
+| IAC | Scanns the App Configuration folder | test | * * * * * |
+| Compliance | Compliance Checks, IAM Policy Validation, Network Policy Enforcement, Topology Verification | test |  0 */4 * * * |
+| WebSecurity | Running Web and Application Security Tests to avoid hacks like xss | test |  0 */4 * * * |
+| Integration | Executing Integration Tests (Back & Frontend) | test | 0 16,22 * * * |
+| Performance | Cluster-wide back- and frontend performance test  | test |  30 16,22 * * * |
+| Build | Building the final version of the application for release | release-candidate | 0 23 * * * |
+| Release | Deploying the built application to production | production & release | 0 0 * * * |
 
 
 ---
