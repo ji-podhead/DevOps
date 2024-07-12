@@ -143,7 +143,8 @@ github_token    <your secret>
 ```hcl
 provider "vault" {
   address = "http://127.0.0.1:8200"
-token = var.vault_token
+token = var.vault_token                 # the token we used before via manual login
+  skip_child_token = true 
 #  NOT WORKING!!!
 #   auth_login {
 #    method = "approle"
@@ -155,14 +156,17 @@ token = var.vault_token
 #    
 #  }
 #
-  skip_child_token = true 
 }
+# NOT WORKING BECAUSE OF V2
+#  data "vault_kv_secret" "proxmox_api_token" {
+#    path = "/keyvalue/data/terraform/github"
+#  }
   data "vault_kv_secret_v2" "proxmox" {
   mount = "keyvalue"
   name  = "terraform/proxmox"
 }
   output "test" {
-    value = data.vault_kv_secret_v2.proxmox.data[<your proxmox secret key>]
+    value = data.vault_kv_secret_v2.proxmox.data[<your secret key>]
       sensitive = true
   }
 ```
