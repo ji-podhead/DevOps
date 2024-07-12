@@ -33,7 +33,7 @@ This is my first cluster based DevOps project that includes CI-CD and gitops pri
 - we report back to github (out central "CI-CD" service 🕵️) and publish our tests and report back to github
  	- we use gh actions plugins like  [publish reports](https://github.com/marketplace/actions/publish-test-results) to create a status report section (including markdown summary)
   	- we setup a bot that reports via gh and messaging service like slack      
-
+- elastic stack will be our main SIEM
 
  
 
