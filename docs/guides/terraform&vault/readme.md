@@ -1,7 +1,18 @@
+# DevOps
+
+| [Guides](https://github.com/ji-podhead/DevOps/tree/main/docs/guides)  |  [Projects](https://github.com/ji-podhead/DevOps/)  |
+
+---
+
+## Guides 
+
+| [TerrForm & Vault]() | [Terraform & Proxmox]() | 
 
 
-# Terraform & Vault
-## set up vault secrets and auth
+## Terraform & Vault
+
+### set up vault secrets and auth
+
 ***create a policy called `terraform`***
 ```bash
 path "*" {
