@@ -1,12 +1,12 @@
 # DevOps
 
-| [Guides](https://github.com/ji-podhead/DevOps/tree/main/docs/guides)  |  [Projects](https://github.com/ji-podhead/DevOps/)  |
+| [Guides](https://ji-podhead.github.io/DevOps/guides/)  |  [Projects](https://github.com/ji-podhead/DevOps/)  |
 
 ---
 
 ## Guides 
 
-| [TerrForm & Vault]() | [Terraform & Proxmox]() | 
+| [TerrForm & Vault](https://ji-podhead.github.io/DevOps/guides/terraform&vault/) | [Terraform & Proxmox](https://ji-podhead.github.io/DevOps/guides/terraform&proxmox/) | 
 
 
 ## Terraform & Vault
