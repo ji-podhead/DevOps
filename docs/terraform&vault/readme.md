@@ -170,3 +170,16 @@ token = var.vault_token                 # the token we used before via manual lo
       sensitive = true
   }
 ```
+
+***test and apply it***
+
+
+```bash
+...
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+test = <sensitive>
+```
+> - this way  we can test our vault and terraform configs
