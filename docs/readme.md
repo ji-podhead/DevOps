@@ -1,6 +1,6 @@
 # DevOps
 
-| [Guides](https://ji-podhead.github.io/docs/DevOps/guides/terraform%26vault)  |  [Projects](https://github.com/ji-podhead/DevOps/blob/main/readme.md#projects)  |
+| [Guides](https://ji-podhead.github.io/DevOps/guides/)  |  [Projects](https://github.com/ji-podhead/DevOps/blob/main/readme.md#projects)  |
 
 ---
 
