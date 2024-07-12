@@ -8,27 +8,16 @@ This is my DevOps Repo.  <br> This serves as my Playground, Portfolio, Research-
 
 ## Projects 
 
-### [1. Static Website CI-CD Pipeline](https://github.com/ji-podhead/ji-podhead-blog)
+### 1. Static Website CI-CD Pipeline
+
+| [Repo](https://github.com/ji-podhead/ji-podhead-blog) |
 
 - we deploy a static react app via terraform to gh-pages
 
 ### 2. The Pod Shop
 
-<div align="center">
- <div style="display: flex; justify-content: space-between; width: 100%;">
-   <!-- Stellen Sie sicher, dass der Container genügend Platz hat -->
-   <div style="width: 50%; display: flex; justify-content: center; box-sizing: border-box;">
-	 <a href="https://github.com/ji-podhead/Pod-Shop-SourceCode">  
-    <b>SourceCode Repo</b>
-    </a>
-   </div>
-   <div style="width: 50%; display: flex; justify-content: center; box-sizing: border-box;">
-    <a href="https://github.com/ji-podhead/Pod-Shop-App-Configs/blob/main/README.md">  
-    <b>App Config Repo</b>
-    </a>
-   </div>
- </div>
-</div>
+| [AppConfigs](https://github.com/ji-podhead/Pod-Shop-App-Configs/blob/main/README.md) | [SourceCode](https://github.com/ji-podhead/Pod-Shop-SourceCode) |
+
 
 This is my first cluster based DevOps project that includes CI-CD and gitops principles.
 
