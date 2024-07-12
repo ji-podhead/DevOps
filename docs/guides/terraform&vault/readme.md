@@ -1,17 +1,22 @@
+
 # DevOps
 
-| [Guides](https://ji-podhead.github.io/DevOps/guides/)  |  [Projects](https://github.com/ji-podhead/DevOps/)  |
+<div align="center">
+      <img src="https://github.com/ji-podhead/ji-podhead/blob/main/logo.jpg?raw=true" align="right" width="150" />
+</div>
+
+| [Guides](https://ji-podhead.github.io/DevOps/)  |  [Projects](https://github.com/ji-podhead/DevOps/blob/main/readme.md#projects)  |
+
+This is my DevOps Repo.  <br> This serves as my Playground, Portfolio, Research-Notebook, Cheat-Sheet and Guide. 
+
+## Guides
+
+| [TerrForm & Vault](https://ji-podhead.github.io/DevOps/guides/terraform&vault/) |  [Terraform & Proxmox](https://ji-podhead.github.io/DevOps/guides/terraform%26proxmox)   |
 
 ---
+### Terraform & Vault
 
-## Guides 
-
-| [TerrForm & Vault](https://ji-podhead.github.io/DevOps/guides/terraform&vault/) | [Terraform & Proxmox](https://ji-podhead.github.io/DevOps/guides/terraform&proxmox/) | 
-
-
-## Terraform & Vault
-
-### set up vault secrets and auth
+#### set up vault secrets and auth
 
 ***create a policy called `terraform`***
 ```bash
