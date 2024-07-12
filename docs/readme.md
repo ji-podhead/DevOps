@@ -6,8 +6,8 @@
 
 ## Guides 
 
- - [TerrForm & Vault](https://ji-podhead.github.io/docs/DevOps/guides/terraform%26vault)
- - [Terraform & Proxmox](https://ji-podhead.github.io/docs/DevOps/guides/terraform%26proxmox)  
+ - [TerrForm & Vault](https://ji-podhead.github.io/DevOps/guides/terraform&vault/)
+ - [Terraform & Proxmox](https://ji-podhead.github.io/DevOps/guides/terraform%26proxmox)  
 
 
 ## Projects
