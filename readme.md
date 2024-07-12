@@ -1,6 +1,6 @@
 # DevOps
 
-| [Guides](https://github.com/ji-podhead/DevOps/tree/main/docs/guides)  |  [Projects](https://github.com/ji-podhead/DevOps/)  |
+| [Guides](https://ji-podhead.github.io/DevOps/docs/guides/)  |  [Projects](https://github.com/ji-podhead/DevOps/)  |
 
 This is my DevOps Repo.  <br> This serves as my Playground, Portfolio, Research-Notebook, Cheat-Sheet and Guide. 
 
