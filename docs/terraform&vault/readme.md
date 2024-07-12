@@ -1,7 +1,7 @@
 
 
 # Terraform & Vault
-
+## set up vault secrets and auth
 ***create a policy called `terraform`***
 ```bash
 path "*" {
@@ -88,6 +88,10 @@ token_policies       ["default" "terraform-policy"]
 identity_policies    []
 policies             ["default" "terraform-policy"]
 ````
+***create a secret***
+
+![secret](https://github.com/ji-podhead/DevOps/blob/main/docs/terraform&vault/vaul_secret.png?raw=true)
+> ***this image shows a wrong path, the engine uses v2, so dont be confused***
 
 ***login (test)***
 
@@ -132,4 +136,33 @@ version            1
 Key             Value
 ---             -----
 github_token    <your secret>
+```
+
+***use the secret in terraform***
+
+```hcl
+provider "vault" {
+  address = "http://127.0.0.1:8200"
+token = var.vault_token
+#  NOT WORKING!!!
+#   auth_login {
+#    method = "approle"
+#    path = "auth/approle/login"
+#    parameters = {
+#      role_id   = var.vault_role_id
+#      secret_id = var.vault_role_secret_id
+#    }
+#    
+#  }
+#
+  skip_child_token = true 
+}
+  data "vault_kv_secret_v2" "proxmox" {
+  mount = "keyvalue"
+  name  = "terraform/proxmox"
+}
+  output "test" {
+    value = data.vault_kv_secret_v2.proxmox.data[<your proxmox secret key>]
+      sensitive = true
+  }
 ```
