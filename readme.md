@@ -12,6 +12,13 @@ This is my DevOps Repo.  <br> This serves as my Playground, Portfolio, Research-
 
 ---
 
+## Guides 
+
+ - [TerrForm & Vault](https://ji-podhead.github.io/DevOps/guides/terraform&vault/)
+ - [Terraform & Proxmox](https://ji-podhead.github.io/DevOps/guides/terraform%26proxmox)  
+
+---
+
 ## Projects 
 
 ### 1. Static Website CI-CD Pipeline
