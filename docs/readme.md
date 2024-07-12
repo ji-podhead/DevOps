@@ -1,11 +1,20 @@
 # DevOps
-This is my DevOps Repo. 
-<br> This serves as my Playground, Portfolio, Research-Notebook, Cheat-Sheet and Guide. 
+
+| [Guides](https://github.com/ji-podhead/DevOps/tree/main/docs/guides)  |  [Projects](https://github.com/ji-podhead/DevOps/)  |
+
 ---
-## [1. Static Website CI-CD Pipeline](https://github.com/ji-podhead/ji-podhead-blog)
+
+This is my DevOps Repo. <br> This serves as my Playground, Portfolio, Research-Notebook, Cheat-Sheet and Guide. 
+
+---
+
+## Projects
+### [1. Static Website CI-CD Pipeline](https://github.com/ji-podhead/ji-podhead-blog)
+
 - we deploy a static react app via terraform to gh-pages
 
-## 2. The Pod Shop
+### 2. The Pod Shop
+
 <div align="center">
  <div style="display: flex; justify-content: space-between; width: 100%;">
    <!-- Stellen Sie sicher, dass der Container genügend Platz hat -->
@@ -84,22 +93,11 @@ but thanks to excellent help and support from [@mkunikow](https://github.com/mku
 │       │   ├── main.tf
 │       │   ├── variables.tf
 │       │   └── outputs.tf
-│       └── cassandra
-│           ├── main.tf
-│           ├── variables.tf
-│           └── outputs.tf
 ├── jenkins
 │   ├── Jenkinsfile
 │   └── pipeline-scripts
 │       ├── build-script.sh
 │       └── deploy-script.sh
-├── grpc
-│   ├── proto
-│   │   └── myservice.proto
-│   └── src
-│       └── myservice
-│           ├── myservice_server.go
-│           └── myservice_client.go
 ```
 
 ---
