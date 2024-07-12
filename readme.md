@@ -1,4 +1,10 @@
+
+
 # DevOps
+
+<div align="center">
+      <img src="https://github.com/ji-podhead/ji-podhead/blob/main/logo.jpg?raw=true" align="right" width="150" />
+</div>
 
 | [Guides](https://ji-podhead.github.io/DevOps/)  |  [Projects](https://github.com/ji-podhead/DevOps/)  |
 
