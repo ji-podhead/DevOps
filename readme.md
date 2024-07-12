@@ -1,11 +1,22 @@
 # DevOps
-This is my DevOps Repo. 
-<br> This serves as my Playground, Portfolio, Research-Notebook, Cheat-Sheet and Guide. 
+
+| [Guides](https://github.com/ji-podhead/DevOps/tree/main/docs/guides)  |  [Projects](https://github.com/ji-podhead/DevOps/)  |
+
+This is my DevOps Repo.  <br> This serves as my Playground, Portfolio, Research-Notebook, Cheat-Sheet and Guide. 
+
 ---
-## [1. Static Website CI-CD Pipeline](https://github.com/ji-podhead/ji-podhead-blog)
+
+## Projects 
+
+
+
+
+### [1. Static Website CI-CD Pipeline](https://github.com/ji-podhead/ji-podhead-blog)
+
 - we deploy a static react app via terraform to gh-pages
 
-## 2. The Pod Shop
+### 2. The Pod Shop
+
 <div align="center">
  <div style="display: flex; justify-content: space-between; width: 100%;">
    <!-- Stellen Sie sicher, dass der Container genügend Platz hat -->
