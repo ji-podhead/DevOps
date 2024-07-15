@@ -59,7 +59,43 @@ but thanks to excellent help and support from [@mkunikow](https://github.com/mku
 ![POD SHOP](https://github.com/ji-podhead/DevOps/blob/main/pod-shop-infrastructure.png?raw=true)
 
 ---
+### CI-CD Pipeline
+```mermaid
+graph TD;
+    p1[pull Request and review]
+    pub1[publish test results]
+    pub2[publish test results]
+    cronjob
 
+    subgraph local_infra
+    Proxmox
+    Vault
+
+  subgraph Jenkins
+      c1[CodeQuality And Linting]
+        t1[testing plans]
+	d1[Deployment]
+    end
+end     
+
+    subgraph GitHub 
+        Main 
+        Development 
+    end
+
+Development --> c1
+c1-->pub1
+pub1-->p1
+p1-->Development
+
+Main -->cronjob
+cronjob-->t1
+t1-->pub2
+pub2-->Main
+Development -."merge".->Main
+d1-->Proxmox
+Main-->d1
+```
 ### Release Management & Test Scheduling
 ***successfull Production-Commits will be pushed to `release-candidate` Branch***
 
