@@ -14,7 +14,7 @@ This is my DevOps Repo.  <br> This serves as my Playground, Portfolio, Research-
 ## Guides 
 
 - [TerrForm & Vault](https://ji-podhead.github.io/DevOps/guides/terraform&vault/)
-- [static configuration scanners, Rules, and Test Results](ttps://ji-podhead.github.io/DevOps/automatic_checks)
+- [static configuration scanners, Rules, and Test Results](https://ji-podhead.github.io/DevOps/automatic_checks)
 - [Terraform & Proxmox](https://ji-podhead.github.io/DevOps/guides/terraform%26proxmox)  
 
 
