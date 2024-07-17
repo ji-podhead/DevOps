@@ -11,7 +11,7 @@
 This is my DevOps Repo.  <br> This serves as my Playground, Portfolio, Research-Notebook, Cheat-Sheet and Guide.
 
 ## Guides 
-
+ - [CheatSheets](https://github.com/ji-podhead/DevOps/cheatsheets.md)	
  - [TerrForm & Vault](https://ji-podhead.github.io/DevOps/guides/terraform&vault/)
  - [static configuration scanners, Rules, and Test Results](https://ji-podhead.github.io/DevOps/automatic_checks)
  - [Terraform & Proxmox](https://ji-podhead.github.io/DevOps/guides/terraform%26proxmox)  
