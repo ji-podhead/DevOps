@@ -8,11 +8,10 @@
     - add your git user name  and paste the pat into the password field
     - ***DO NOT USE SSH + PASSWORD***
 
-
+---
 
 ## tailscale and github action 
 
----
 
 ***related tailscale docs*** <br>
 | [tailscale & github actions](https://tailscale.com/kb/1276/tailscale-github-action#how-it-works) | [oauth clients](https://tailscale.com/kb/1215/oauth-clients) | [ACL-tags](https://tailscale.com/kb/1068/acl-tags) |
