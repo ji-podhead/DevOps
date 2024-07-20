@@ -166,7 +166,7 @@ Cleaning up orphan processes
 ```bash
 $ curl -H "Authorization: Bearer ${var.api_key}" https://api.tailscale.com/api/v2/tailnet/ji-podhead.github/devices > OUTPUTFILE
 ```
-- you have to use bearer token
+- you have to use  `Bearer` **instead of** `-u`, or you will get prompet to enter the root password of the machine that runs vault
 >```bash
 > -u <your api key>
 >```
