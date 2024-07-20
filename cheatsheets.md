@@ -156,3 +156,22 @@ Hello, this is my custom server running on port ***!
 0s
 Cleaning up orphan processes
 #--------------------------------------------------------------------------------
+```
+---
+
+## Tailscale API
+
+- get the devices
+
+```bash
+$ curl -H "Authorization: Bearer ${var.api_key}" https://api.tailscale.com/api/v2/tailnet/ji-podhead.github/devices > OUTPUTFILE
+```
+- you have to use bearer token
+>```bash
+> -u <your api key>
+>```
+- those oauth flagss do not work (neither in terraform, nor in api, even with tags and acl)  
+>```bash
+>  --data-urlencode 'client_id=<client id> \
+>  --data-urlencode 'client_secret=t<client secret>
+>```  
