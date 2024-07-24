@@ -31,11 +31,9 @@ I noticed that under some circumstances you can leak your secrets and it allmost
 - you renamed your tfstate file, or gave it another filetype
 
 those are just 3 examples, but the tragic reality is that whoever contributes to your public repo can fuck things up if you dont take care about this
->  > 1. someone exposes and iprange of your acl to a public exposed server
->  >    - eg. tailscale funnel + web hook-, dns-, or whatever server
->  > 2. someone created an environment variable for a password instead of sensible variable, or he forgot sensible
->  > 3. he exposes data that you dont watchout for but it can harm himself  	
-
+>  1. someone exposes and iprange of your acl to a public exposed server
+>     - eg. tailscale funnel + web hook-, dns-, or whatever server
+>  2. someone created an environment variable for a password instead of sensible variable, or he exposes data that you dont scan detect, but it's a risk for him
 ### zero trust approach for ica configs and public git repos
 Luckily we have a few options that gives us a 99% chance, that no sensible data will never get exposed (if we do t right) <br>
 Here are my ideas:
