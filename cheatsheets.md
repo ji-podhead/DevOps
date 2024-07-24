@@ -111,7 +111,7 @@ with socketserver.TCPServer(("", PORT), MyHttpRequestHandler) as httpd:
 name: CI
 on:
   push:
-    branches: [ "testjob" ]
+    branches: [ "testjob" ]					# <<<--- add your branches
   pull_request:
     branches: [ "testjob" ]
   workflow_dispatch:
@@ -132,11 +132,11 @@ jobs:
       - name: Setup Tailscale
         uses: tailscale/github-action@v2
         with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}	# <<<--- add you tailscale creds to your gh secrets
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci                                        # <<<--- THIS IS IMPORTANT
+          tags: tag:ci                                        	# <<<--- THIS IS IMPORTANT
 
-      - name: ping                                           # <<<--- LETS PING A SERVER FOR TESTING
+      - name: ping                                           	# <<<--- LETS PING A SERVER FOR TESTING
         if: always()
         run: |
           curl http://${{ secrets.TAILSCALE_IP }}:${{ secrets.TAILSCALE_SERVER_PORT_1 }}
