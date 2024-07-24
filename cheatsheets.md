@@ -49,7 +49,7 @@ Here are my ideas:
      - **alternatives:**
        - *gitea/foregejo:* free but selfhosted
        - *gitlabs:* free but limited to 2000 compute minutes
-3. ***use prereceive hooks and github enterprise server***
+3. ***use prereceive hooks and github enterprise server*** `safe`
    - github prereceive hooks let us block an incomming push and create a pr in a public repo (code is sealed)
      - we delete the workspace folder but push into our private repo before. 
    - you can review after testing and merge back into the public repo
