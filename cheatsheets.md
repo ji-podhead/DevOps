@@ -20,33 +20,32 @@ I noticed that under some circumstances you can leak your secrets and it allmost
   - many many more
     
 **Heres how i can proove it:**
- 
+> ***tests fail in a public repo, but the commit is still publicly available***
 
 - write a bash script, call it with local_exec resource and `echo <secret> > file.txt`
-  - if you forget to encrypt this file, or put it on .gitignore:
+  - if you forget to encrypt this file, or did'nt put it on .gitignore:
     - ***your created file will get exposed on github***
 - use data instead of variable to get vault secrets
-  - if you accidentaly pull with no `.gitignore` included in the branch and then push back to the branch:
+  - if you accidentaly pull w and then push back with no `.gitignore` included in the branch:
     - ***your entire tfstate file and all of your files you have in .gitignore will get exposed on github***
 - you renamed your tfstate file, or gave it another filetype
-- ***tests fail in a public repo, but the commit is still publicly available***
 
-> those are just two examples, the tragic reality is though, that whoever contributes to your public repo can fuck things up if you dont take care about this
->  1. someone exposes and iprange of your acl to a public exposed server
->     - eg. tailscale funnel + web hook-, dns-, or whatever server
->  2. someone created an environment variable for a password instead of sensible variable, or he forgot sensible
->  3. he exposes data that you dont watchout for but it can harm himself  	
+those are just 3 examples, but the tragic reality is that whoever contributes to your public repo can fuck things up if you dont take care about this
+>  > 1. someone exposes and iprange of your acl to a public exposed server
+>  >    - eg. tailscale funnel + web hook-, dns-, or whatever server
+>  > 2. someone created an environment variable for a password instead of sensible variable, or he forgot sensible
+>  > 3. he exposes data that you dont watchout for but it can harm himself  	
 
 ### zero trust approach for ica configs and public git repos
-Luckily we have a few options that gives us a 99% chance, that no sensible data will ever get exposed. <br>
+Luckily we have a few options that gives us a 99% chance, that no sensible data will never get exposed (if we do t right) <br>
 Here are my ideas:
 1. ***encrypt your files before push*** `not very safe`
-   - a script that you call before even commiting (or with prereceive hooks) can scan for vulnerable data/code and encrypt
+   - a script that you call before even commiting (or with prereceive hooks) can scan for vulnerable data/code and encrypt your code/data
    - **Downside:** you dont know if its ever get called *(maybe somebody just ignores to call it, or he simply just forgot about it)*  
 2. ***use a private repo for iac configs*** `safe`
-   - you can mirror to a public repo using (github actions) bot once you approved and your static tests are all passed
-   - **you cant have branch protection rules for a private repo** on gh free plan however
-     - **alternatives:**
+   - you can mirror to a public repo using a  bot (eg. github actions) once you approved and your static tests are all passed
+   - ~you cant have branch protection rules for a private repo on gh free plan however~
+     - alternatives:
        - *gitea/foregejo:* free but selfhosted
        - *gitlabs:* free but limited to 2000 compute minutes
 3. ***use prereceive hooks and github enterprise server*** `safe`
