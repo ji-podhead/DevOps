@@ -31,10 +31,11 @@ I noticed that under some circumstances you can leak your secrets and it allmost
 - you renamed your tfstate file, or gave it another filetype
 - ***tests fail in a public repo, but the commit is still publicly available***
 
-those are just two examples, the tragic reality is though, that whoever contributes to your public repo can fuck things up if you dont take care about this
-  1. someone exposes and iprange of your acl to a public exposed server (eg. tailscale funnel + web hook server/dns/whatever)
-  2. someone created an environment variable for a password instead of sensible variable, or he forgot sensible
-  3. he exposes data that you dont watchout for but it can harm himself  	
+> those are just two examples, the tragic reality is though, that whoever contributes to your public repo can fuck things up if you dont take care about this
+>  1. someone exposes and iprange of your acl to a public exposed server
+>     - eg. tailscale funnel + web hook-, dns-, or whatever server
+>  2. someone created an environment variable for a password instead of sensible variable, or he forgot sensible
+>  3. he exposes data that you dont watchout for but it can harm himself  	
 
 ### zero trust approach for ica configs and public git repos
 Luckily we have a few options that gives us a 99% chance, that no sensible data will ever get exposed. <br>
