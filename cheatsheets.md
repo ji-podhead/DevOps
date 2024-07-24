@@ -39,7 +39,7 @@ those are just two examples, the tragic reality is though, that whoever contribu
 ### zero trust approach for ica configs and public git repos
 Luckily we have a few options that gives us a 99% chance, that no sensible data will ever get exposed. <br>
 Here are my ideas:
-1. ***encrypt your files*** `not very safe`
+1. ***encrypt your files before push*** `not very safe`
    - a script that you call before even commiting (or with prereceive hooks) can scan for vulnerable data/code and encrypt
    - **Downside:** you dont know if its ever get called *(maybe somebody just ignores to call it, or he simply just forgot about it)*  
 2. ***use a private repo for iac configs*** `safe`
