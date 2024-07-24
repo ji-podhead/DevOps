@@ -55,7 +55,8 @@ Here are my ideas:
    - you can review after testing and merge back into the public repo
      - this way we can seal the code in the public repo until approved and our bot will do the rest 
 4. ***github enterprise secret scanning*** `not very safe`
-   - its cool that we have that feature, but lets be honest: vulnerable ips, hostnames, emails, or usernames are not getting scanned here, so this requires additional review or manual scanning 
+   - its cool that we have that feature, but lets be honest:
+     - vulnerable ips, hostnames, emails, or usernames are not getting scanned here, so this requires additional review or manual scanning 
 ---
 
 ## tailscale and github action 
