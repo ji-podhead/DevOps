@@ -10,7 +10,7 @@
 
 ---
 
-### how can sensible data get leaked on github trough terraform?
+## how can sensible data get leaked on github trough terraform?
 I noticed that under some circumstances you can leak your secrets and it allmost happen to me. There are some protection measures like git warning you about exposing secrets when trying to push. However you can still expose data that might not get registered as secret (vulnerable ips, ports, or code that was never meant to be public), or secrets will simply not getting registered as such.<br>
 **Heres how i can proove it:**
  
