@@ -1,4 +1,4 @@
-# cheatsheets
+# cheatsheets & Unreleased Guides
 
 ## Jenkins & Github
 ***jenkins has a weird way of signing in to git.***
@@ -8,6 +8,43 @@
     - add your git user name  and paste the pat into the password field
     - ***DO NOT USE SSH + PASSWORD***
 
+---
+
+### how can sensible data get leaked on github trough terraform?
+I noticed that under some circumstances you can leak your secrets and it allmost happen to me. There are some protection measures like git warning you about exposing secrets when trying to push. However you can still expose data that might not get registered as secret (vulnerable ips, ports, or code that was never meant to be public), or secrets will simply not getting registered as such.<br>
+**Heres how i can proove it:**
+ 
+
+- write a bash script call it in local_exec and `echo <secret> > file.txt`
+  - if you forget to encrypt this file, or put it on .gitignore:<br>***your created file will get exposed on github***
+- use data instead of variable to get vault secrets
+  - if you accidentaly pull with no `.gitignore` included in the branch and then push back to the branch:<br>***your entire tfstate file and all of your files you have in .gitignore will get exposed on github***
+- you renamed your tfstate file, or gave it another filetype
+- ***tests fail in a public repo, but the commit is still publicly available***
+
+those are just two examples, the tragic reality is though, that whoever contributes to your public repo can fuck things up if you dont take care about this
+- 1. someone exposes and iprange of your acl to a public exposed server (eg. tailscale funnel + web hook server/dns/whatever)
+  2. someone created an environment variable for a password instead of sensible variable, or he forgot sensible
+  3. he exposes data that you dont watchout for but it can harm himself  	
+
+### zero trust approach for ica configs and public git repos
+Luckily we have a few options that gives us a 99% chance, that no sensible data will ever get exposed. <br>
+Here are my ideas:
+- 1. ***encrypt your files*** `not very safe`
+  - a script that you call before even commiting (or with prereceive hooks) can scan for vulnerable data/code and encrypt
+  - **Downside:** you dont know if its ever get called *(maybe somebody just ignores to call it, or he simply just forgot about it)*  
+- 2. ***use a private repo for iac configs*** `safe`
+  - you can mirror to a public repo using (github actions) bot once you approved and your static tests are all passed
+  - **you cant have branch protection rules for a private repo** on gh free plan however
+    - **alternatives:**
+      - *gitea/foregejo:* free but selfhosted
+      - *gitlabs:* free but limited to 2000 compute minutes
+- 3. ***use prereceive hooks and github enterprise server***
+  - github prereceive hooks let us block an incomming push and create a pr in a public repo
+  - you can review after testing and merge back into the public repo
+    - this way we can seal the code in the public repo until approved and our bot will do the rest 
+- 4. ***github enterprise secret scanning*** `not very safe`
+  - its cool that we have that feature, but lets be honest: vulnerable ips, hostnames, emails, or usernames are not getting researched here, so this requires additional review or manual scanning 
 ---
 
 ## tailscale and github action 
