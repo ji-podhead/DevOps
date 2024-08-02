@@ -10,16 +10,22 @@
 
 ---
 ## Debug Github Actions in VS Code
-- you can use the multiple plugins that seem to wrap some api like around the workflow (like [vs-code-server-action](https://github.com/marketplace/actions/vs-code-server-action), or run your workflow locally using something like [GAL ](https://marketplace.visualstudio.com/items?itemName=alphaxek.github-actions-locally).
-  - but those plugins seem somewhat overkill/to hard to install when you just want to have some quick edits
-  - GAL even requires docker and the other one runs in codespace
-- so i figured it's just easier to use the basic actions extension
-  - it kinda sucks that the link to your workflow uses the browser instead of vscode webview pane, but thats not that problematic
-
 ### commit and trigger the workflow with one command in vs code terminal
 ```bash
 git add . && git commit -m "Your Commit-Message" && git push 
 ```
+### use the extension to open your workflow with 2 clicks
+- refresh the window
+- open the created workflow in your browser
+  
+![extensions](https://github.com/ji-podhead/DevOps/blob/main/docs/debug_actions.png?raw=true)
+
+
+- additioinaly you can use multiple plugins that seem to wrap some api like around the workflow (like [vs-code-server-action](https://github.com/marketplace/actions/vs-code-server-action), or run your workflow locally using something like [GAL ](https://marketplace.visualstudio.com/items?itemName=alphaxek.github-actions-locally).
+  - but those plugins seem somewhat overkill/to hard to install when you just want to have some quick edits
+  - GAL even requires docker and the other one runs in codespace
+- so i figured it's just easier to use the basic actions extension
+  - it kinda sucks that the link to your workflow uses the browser instead of vscode webview pane
 
 
 
