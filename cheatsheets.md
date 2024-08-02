@@ -40,12 +40,12 @@ jobs:
         with:
           repository:  the-pod-shop/App-Configs-private # <-- the-pod-shop/App-Configs-private
           token: ${{ secrets.ACTIONS_KEY }}             # <---other scope---.		    .
-          path: main					#		    |
-#							#		    |
-#							#		    |
-      - name: Push to target repo			#		    |
-        uses: ad-m/github-push-action@master		#		    |
-        with:						#		    |
+          path: main							   #|
+#									   #|
+#							                   #|
+      - name: Push to target repo					   #|
+        uses: ad-m/github-push-action@master				   #|
+        with:								   #|
           github_token: ${{ secrets.API_TOKEN_GITHUB }} # <--current scope--*
           repository: the-pod-shop/Pod-Shop-App-Configs # <-- the-pod-shop/Pod-Shop-App-Configs
           branch: merge_private
