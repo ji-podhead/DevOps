@@ -10,6 +10,50 @@
 
 ---
 
+## Github Organisation Pats
+this is kinda confusing at first:
+  - you have to allow the creation of pats in the organisation settings
+  - go to your ***personal*** developer settings where you usually create access keys
+  - create a net pat, but choose the target organisation
+  - go back to your organisation and allow the pat, if a user is not admin and you set *Require administrator approval* to true
+
+--- 
+## clone another (private) repo in gh actions using checkout
+when you clone another repo into your current branch in gh actions and your token is used  somewhere in your workflow for the current scope: 
+  - ***you have to use a second token for the private repo***
+    
+this can be confusing, so make sure to [check out the docs](https://github.com/actions/checkout?tab=readme-ov-file#checkout-multiple-repos-private)
+
+```yaml
+jobs:
+  merge_from_private:
+    runs-on: ubuntu-latest
+    permissions: write-all 		# not recommended, just for testing!!!!
+    steps:
+      - name: Checkout					# <-- the-pod-shop/Pod-Shop-App-Configs 
+        uses: actions/checkout@v4
+        with:
+          path: main
+      
+      - name: Checkout another private repository      
+        uses: actions/checkout@v4
+        with:
+          repository:  the-pod-shop/App-Configs-private # <-- the-pod-shop/App-Configs-private
+          token: ${{ secrets.ACTIONS_KEY }}             # <---other scope---.		    .
+          path: main					#		    |
+#							#		    |
+#							#		    |
+      - name: Push to target repo			#		    |
+        uses: ad-m/github-push-action@master		#		    |
+        with:						#		    |
+          github_token: ${{ secrets.API_TOKEN_GITHUB }} # <--current scope--*
+          repository: the-pod-shop/Pod-Shop-App-Configs # <-- the-pod-shop/Pod-Shop-App-Configs
+          branch: merge_private
+          directory: ./
+```
+
+---
+
 ## how can sensible data get leaked on github trough terraform?
 I noticed that under some circumstances you can leak your secrets and it allmost happen to me. There are some protection measures like git warning you about exposing secrets when trying to push. However you can still expose data that might not get registered as secret (vulnerable ips, ports, or code that was never meant to be public), or secrets will simply not getting registered as such.<br>
 ****possible outcome:****
