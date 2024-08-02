@@ -63,39 +63,71 @@ but thanks to excellent help and support from [@mkunikow](https://github.com/mku
 ### CI-CD Pipeline
 ```mermaid
 graph TD;
-    p1[pull Request and review]
-    pub1[publish test results]
-    pub2[publish test results]
+%%{init:{
+  'theme':'base',
+  'themeVariables': {
+    'lineColor':'#6A7FABCC',
+    'fontSize':'16px'
+  }
+}}%%
+    p1(pull Request and review)
+    pub1(publish test results)
+    pub2(publish test results)
     cronjob
 
     subgraph local_infra
-    Proxmox
-    Vault
-
-  subgraph Jenkins
-      c1[CodeQuality And Linting]
-        t1[testing plans]
-	d1[Deployment]
-    end
-end     
-
-    subgraph GitHub 
-        Main 
-        Development 
+	base
+	dcworkshop1
+	dcworkshop2
+        style base fill:#f9d5e5,stroke:#b6a7a8,stroke-width:2px
+        style dcworkshop1 fill:#f9d5e5,stroke:#b6a7a8,stroke-width:2px
+        style dcworkshop2 fill:#f9d5e5,stroke:#b6a7a8,stroke-width:2px
     end
 
-Development --> c1
-c1-->pub1
-pub1-->p1
-p1-->Development
+    subgraph Jenkins
+        c1(CodeQuality And Linting)
+        t1(testing plans)
+        d1(Deployment)
+        style c1 fill:#FFAF87,stroke:#377771,stroke-width:2px, primaryTextColor:#4C6085
+        style t1 fill:#FFAF87,stroke:#377771,stroke-width:2px, primaryTextColor':'#4C6085'
+        style d1 fill:#FFAF87,stroke:#377771,stroke-width:2px, primaryTextColor:#4C6085
+	style Jenkins fill:#,stroke:#4C6085,stroke-width:2px font: #6A7FABCC
+    end
 
-Main -->cronjob
-cronjob-->t1
-t1-->pub2
-pub2-->Main
-Development -."merge".->Main
-d1-->Proxmox
-Main-->d1
+
+    subgraph PublicRepo
+	Main
+	Development
+        style Main fill:#FFE66D,stroke:#000,stroke-width:2px
+        style Development fill:#FFE66D,stroke:#000,stroke-width:2px
+        style PublicRepo #FF6B6B,stroke:#4C6085,stroke-width:2px
+    end
+
+    subgraph PrivateRepo
+	Main2[Main]
+	Development2[Development]
+	style Main2 fill:#D4ADCF,stroke:#C1CAD6,stroke-width:2px
+        style Development2 fill:#D4ADCF,stroke:#C1CAD6,stroke-width:2px
+        style PrivateRepo C1CAD6:#856084,stroke:#856084,stroke-width:2px
+    end
+
+    Development --> c1
+    c1-->pub1
+    pub1-->p1
+    p1-->Development
+
+    Development2 -.-> Main2
+    Main2 -.-> Development
+
+    Main -->cronjob
+    cronjob-->t1
+    t1-->pub2
+    pub2-->Main
+    Development -.-> Main
+    d1-->local_infra
+    Main-->d1
+
+
 ```
 ### Release Management & Test Scheduling
 ***successfull Production-Commits will be pushed to `release-candidate` Branch***
