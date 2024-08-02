@@ -7,6 +7,99 @@
     - ***you need to select  to select `USERNAME+PASSWORD`***
     - add your git user name  and paste the pat into the password field
     - ***DO NOT USE SSH + PASSWORD***
+--- 
+
+## Ansible Variables, Secrets and Vault
+this is how you can use variables and secrets in ansible:
+### 1. Variables as Constructor argument
+You can pass secrets/variables to ansible using the -e flag (eg `-e var=<value>`).
+  - example:
+    ```bash
+       ansible-playbook ansible/proxmox_playbook.yml -i ansible/inventory.yml  -e vault_token=<yout token> -vvv
+    ```
+### 2. Environment Variables
+ 
+- create env. variable manualy
+     ```bash
+     	export variable = value
+     ```
+- use [git actions environment variables](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/variables#defining-environment-variables-for-a-single-workflow) and just reference them in ansible
+  - this is how you can create them in a workflow:
+  ```yaml
+	  jobs:
+	  greeting_job:
+	    runs-on: ubuntu-latest
+	    env:
+	      Greeting: Hello
+	    steps:
+	      - name: "Say Hello Mona it's Monday"
+	        run: echo "$Greeting $First_Name. Today is $DAY_OF_WEEK!"
+	        env:
+	          First_Name: Mona
+  ```
+### 3. [ansible vault](https://docs.ansible.com/ansible/latest/cli/ansible-vault.html#ansible-vault)
+all this does is to encrypt your inventory file (where you usualy store your hosts and ssh keys), or other files.
+- usage:
+   ```bash
+   $ ansible-vault encrypt inventory.yml
+   ```
+   - the output will look like this:
+   ```bash
+   $ANSIBLE_VAULT;1.1;AES256
+   6531633239353231303063613464323531643933613336353130383837623537663537343033633
+   ...
+   ```
+   
+### 4. Vault (key/value)	
+you can use the community.hashi_vault plugin to fetch secrets from vault using lookups.
+   - this is how you use lookup:
+     ```yaml
+       "{{ lookup('community.hashi_vault.vault_kv2_get', 'dir/subdir' , engine_mount_point='keyvalue', url='http://127.0.0.1:8200',  token=vault_token)['data']['data']['<your-secret-key>'] }}"
+     ```
+<br> However you need to do this in a playbook. 
+   - ***You cant put the lookups diretly into the inventory***
+   - Even if you can run your script and you have no errors, the variables will remain unknown and lookups wont fire.
+
+
+    
+#### ***Store your secrets in the inventory dynamicaly***
+Before you can use your Hosts and do any ssh connection, you need to fetch your secrets  and store them in the inventory dynamically:
+
+- 1. ***create an inventory*** (the placeholder variables are just for prototyping)
+     ```yaml
+	   workshop_machines:
+	  hosts:
+	    dcworkshop1:
+	      vars:
+	        ansible_ssh_host: "placeholder" 
+	        ansible_user: "placeholder"
+	        ansible_ssh_pass: "placeholder"
+	        ansible_connection: ssh
+	        ansible_become_password: "placeholder"
+      ```
+ - 2. ***Fetch your Vault Secrets and store them using set_fact method***
+	     ```yaml
+		---
+		- hosts: workshop_machines
+		  gather_facts: no
+		  become: true
+		  become_method: sudo
+		  become_user: root
+		  tasks:
+		    - name: gethosts
+		      debug:
+		        var: inventory_hostname
+		    - name: get_secrets_from_vault
+		      set_fact:
+		          proxmox_user_secret: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/' + inventory_hostname + '/' , engine_mount_point='keyvalue', url='http://127.0.0.1:8200',  token=vault_token) }}"
+		
+		    - name: Get secrets from Vault for each host
+		      set_fact:
+		        ansible_ssh_host: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['ip'] }}"
+		        ansible_user: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['user'] }}"
+		        ansible_ssh_pass: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['pass'] }}"
+		        ansible_become_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['pass'] }}"
+	     ```
 
 ---
 ## Debug Github Actions in VS Code
@@ -14,6 +107,7 @@
 ```bash
 git add . && git commit -m "Your Commit-Message" && git push 
 ```
+
 ### use the extension to open your workflow with 2 clicks
 - refresh the window
 - open the created workflow in your browser
@@ -31,12 +125,13 @@ git add . && git commit -m "Your Commit-Message" && git push
 
 ---
 
-## Github Organisation Pats
+## Github Organisation Access Tokens (Pats)
 this is kinda confusing at first:
-  - you have to allow the creation of pats in the organisation settings
-  - go to your ***personal*** developer settings where you usually create access keys
-  - create a net pat, but choose the target organisation
-  - go back to your organisation and allow the pat, if a user is not admin and you set *Require administrator approval* to true
+  - 1. you have to allow the creation of pats in the organisation settings
+  - 2. go to your ***personal*** developer settings where you usually create access keys
+    - create a new pat, but choose your organisation as the target organisation/account instead of your profile
+  - 3. go back to your organisation settings and allow the pat
+    - only if the user that requested the pat is not admin and you have set *Require administrator approval* to true
 
 --- 
 ## clone another (private) repo in gh actions using checkout
