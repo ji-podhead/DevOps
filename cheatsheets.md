@@ -100,7 +100,27 @@ Before you can use your Hosts and do any ssh connection, you need to fetch your 
 		        ansible_ssh_pass: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['pass'] }}"
 		        ansible_become_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['pass'] }}"
 	     ```
+---
+## compare commits in Gitub Actions
+```yaml
+	- name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Get current commit ID
+        run: echo "COMMIT_ID=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
+      - name: Get previous commit ID
+        run: |
+          PREV_COMMIT_ID=$(git rev-list --max-parents=0 HEAD | head -n 1)
+          echo "PREV_COMMIT_ID=$PREV_COMMIT_ID" >> $GITHUB_ENV
+```
+- the commit ids are now also environment variables:
+   ```bash
+	  shell: /usr/bin/bash -e {0}
+	  env:
+	    COMMIT_ID: 350add3930d76dbc4abc0f69d9eb650e7159cbbc
+	    PREV_COMMIT_ID: 350add3930d76dbc4abc0f69d9eb650e7159cbbc
+   ```
 ---
 ## Cache & Containers in Github Actions 
 
@@ -111,7 +131,7 @@ In Some situations that can be quite anyoing, for example when you just want to 
 - We can spare time by caching pip packages, or build containers from the workflow workspace
 ### Caching pip packages
 - the packages get cached but net to get reinstalled though
-   ```bash
+   ```yaml
 	name: Publish Ansible Galaxy Collection
 	on:
 	  push:
