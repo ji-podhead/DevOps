@@ -102,6 +102,93 @@ Before you can use your Hosts and do any ssh connection, you need to fetch your 
 	     ```
 
 ---
+## Cache & Containers in Github Actions 
+
+It can take quite a long time to install python and a single 40mb package in a workflow running on git.
+In Some situations that can be quite anyoing, for example when you just want to deploy a static website, or a package that is in development stage.
+  - in my case, I wanted to create a workflow that automatically publishes to anisble galaxy and that are more than 4 commands to test the results and i was to lazy to set up a debugger
+     
+- We can spare time by caching pip packages, or build containers from the workflow workspace
+### Caching pip packages
+- the packages get cached but net to get reinstalled though
+   ```bash
+	name: Publish Ansible Galaxy Collection
+	on:
+	  push:
+	    branches:
+	      - main 
+	jobs:
+	  job1:
+	    runs-on: ubuntu-latest
+	    steps:
+	      - name: Cache Python dependencies
+		uses: actions/cache@v2
+		with:
+		  path: ~/.cache/pip
+		  key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+		  restore-keys: |
+		    ${{ runner.os }}-pip-
+	      - name: Install dependencies
+		run: |
+		  pip install ansible[galaxy]
+    ```
+	- output:
+	   ```bash
+	   	✅ Cache Python dependencies
+		------------------------------
+		Run actions/cache@v2
+		Cache not found for input keys: Linux-pip-, Linux-pip-
+		20s
+	   	✅ Install dependencies
+		------------------------------
+		Run pip install ansible[galaxy]
+		Defaulting to user installation because normal site-packages is not writeable
+		Collecting ansible[galaxy]
+		  Downloading ansible-10.2.0-py3-none-any.whl (48.2 MB)
+		...
+		Successfully installed ansible-10.2.0 ansible-core-2.17.2 resolvelib-1.0.1
+		2m 14s
+	      	✅ Post Cache Python dependencies
+		------------------------------
+		Post job cleanup.
+		/usr/bin/tar --posix -z -cf cache.tgz -P -C /home/runner/work/ilohelper-collection/ilohelper-collection --files-from manifest.txt
+		Cache Size: ~44 MB (45745781 B)
+		Cache saved successfully
+		Cache saved with key: Linux-pip-
+	   ```
+         - notice that ***gh actions automatically created Post Cache Python dependencies stage for us***
+- you can limit the cache job, so it only gets fired when the requierements have really changed 
+   ```yaml
+	jobs:
+	  check-changes:
+	    runs-on: ubuntu-latest
+	    outputs:
+	      changed: ${{ steps.check.outputs.changed }}
+	    steps:
+	      - name: Checkout repository
+	        uses: actions/checkout@v2
+	      - name: Check if requirements have changed
+	        id: check
+	        run: |
+	          CHANGED=$(git diff --name-only HEAD^ HEAD | grep -q 'requirements.txt' && echo "true" || echo "false")
+	          echo "::set-output name=changed::$CHANGED"
+	
+	  cache-and-install:
+	    needs: check-changes
+	    if: needs.check-changes.outputs.changed == 'true'
+	    runs-on: ubuntu-latest
+	    steps:
+	      - name: Checkout repository
+	        uses: actions/checkout@v2
+	      - name: Cache Python dependencies
+	        uses: actions/cache@v2
+	        .... # the rest
+	      - name: Install dependencies
+	        run: |
+	          pip install ansible[galaxy]
+     ```
+
+---
 ## Debug Github Actions in VS Code
 ### commit and trigger the workflow with one command in vs code terminal
 ```bash
