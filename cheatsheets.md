@@ -101,6 +101,105 @@ Before you can use your Hosts and do any ssh connection, you need to fetch your 
 		        ansible_become_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['pass'] }}"
 	     ```
 ---
+## Ansible & libvirt
+- ***we need `become: true` here, because libvirt requires root***
+
+### 1. install
+  ```yaml
+  - hosts: workshop_machines
+  gather_facts: no
+  become: true
+  become_method: sudo
+  become_user: root
+  tasks:
+    - name: install software
+      block:
+      - name: Install wget
+        ansible.builtin.dnf:
+          name: wget
+          state: present
+      - name: Install libvirt
+        ansible.builtin.dnf:
+          name: libvirt
+          state: present
+   ```
+### 2. create a vm preset
+   - ***it needs to be a *.xml.j2 file***
+   - make sure to use the right emulator path
+     - i had libvirt & kvm installed on another system, so i just looked up the xml in of an existing vm, using the qemu/kvm manager   
+   - also make sure to copy the images to the libvirt image path, but libvirt can have trouble reading your user files
+     - we we will do this in our ansible file in the next step 
+   ```xml
+	<domain type='kvm'>
+	  <memory>131072</memory>
+	  <vcpu>1</vcpu>
+	  <os>
+	    <type arch="i686">hvm</type>
+	  </os>
+	  <clock sync="localtime"/>
+	  <devices>
+	    <emulator>/usr/libexec/qemu-kvm</emulator>
+	    <disk type='file' device='disk'>
+	      <source file='/var/lib/libvirt/images/proxmox-ve_8.2-1.iso'/>
+	      <target dev='hda'/>
+	    </disk>
+	    <interface type='network'>
+	    <mac address="52:54:00:62:f8:25"/>
+	      <source network='default'/>
+	    </interface>
+	    <graphics type='vnc' port='-1' keymap='de'/>
+	  </devices>
+	</domain>
+   ```
+### 4. get your iso
+   - im just downloading proxmox here using wget
+     -  but you can of course use docker hub, or your self hosted registry (gitea, or gitlab). not sure if it makes sense to use Argo here though
+      
+     ```yaml
+	      - name: get_proxmox_iso
+	        ansible.builtin.shell: |
+	          cd /var/lib/libvirt/images/
+	        # wget -c https://enterprise.proxmox.com/iso/proxmox-ve_8.2-1.iso 
+	        args:
+	          chdir: ./
+      ```    
+### 3. create and update vms
+   - if you dont want to update your configuration and infra, you dont need the destroy job
+   - notice that you have to define a vm before you can create it.
+   - i use a config file that is stored under `./config/libvirt/<hostname>.xml.j2`
+     - you can of course just use lookup, but i wanted to have multiple presets for different hosts, or groups
+       
+     ```yaml
+          - name: create vms
+	      block:
+	        - name: destroy VM
+	          ignore_errors: true
+	          community.libvirt.virt:
+	            name:  "{{ inventory_hostname }}_proxmox" 
+	            command: destroy
+	            autostart: true
+	            xml: "{{ lookup('template', '../config/libvirt/' + inventory_hostname + '.xml.j2') }}"
+	        # defining and launching an LXC guest
+	        - name: define VM
+	          community.libvirt.virt:
+	            name: "{{ inventory_hostname }}_proxmox"
+	            command: define
+	            autostart: true
+	            xml: "{{ lookup('template', '../config/libvirt/' + inventory_hostname + '.xml.j2') }}"
+	        - name: Create VM
+	          community.libvirt.virt:
+	            name: "{{ inventory_hostname  }}_proxmox"
+	            command: create
+	            autostart: true
+	            xml: "{{ lookup('template', '../config/libvirt/' + inventory_hostname + '.xml.j2') }}"
+	        - name: Get VMs list
+	          community.libvirt.virt:
+	            command: list_vms
+	          register: existing_vms
+	          changed_when: no
+      ```
+---
+
 ## compare commits in Gitub Actions
 ```yaml
 	- name: Checkout repository
