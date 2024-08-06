@@ -103,7 +103,8 @@ Before you can use your Hosts and do any ssh connection, you need to fetch your 
 ---
 ## Ansible & libvirt
 - ***we need `become: true` here, because libvirt requires root***
-
+- in this step we will just create a config for each host(could also be hostgroups)
+  - in the next step will use roles and jinja templates instead 
 ### 1. install
   ```yaml
   - hosts: workshop_machines
@@ -200,6 +201,91 @@ Before you can use your Hosts and do any ssh connection, you need to fetch your 
       ```
 ---
 
+## Ansible roles
+
+| [Ansible Roles](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html)| [build-VM-fast-ansible](https://www.redhat.com/sysadmin/build-VM-fast-ansible) | [ansible-templates-configuration](https://www.redhat.com/sysadmin/ansible-templates-configuration) |
+- roles let us use jijna templates **-> the files have a `*.j2` suffix**
+- we can use ansible variables in our template files, so we dont need a file for each host, or change the file dynamically according to the host specific values (like hostname)
+### Example
+- lets say we want to change the name attribute for each host in the vm preset xml
+- without roles and jina templates we need to use sed(regex) for each value:
+   ```bash
+   	$ sed -i "s|<name>[^>]*</name>|<name>$vm_name</name>|" $xml_path
+   ```
+- when using roles and jinja templates, we can use our ansibles variables directly in the xml preset:
+   ```xml
+   	<name>{{ vm_name }}</name>
+   ```
+### Create a Role 
+- go to your playbook folder
+- initialize a role
+  ```bash
+     $ ansible-galaxy role init kvm_provision
+  ```
+- remove the files that are not required
+   ```bash
+   $ rm -r files handlers vars
+   ```
+- add path to ansible.cfg (not sure if required)
+  - ansible should usualy look for a roles folder in your playbookfolder
+  ```yaml
+  roles_path = ./roles:./playbooks/roles
+  ``` 
+- create defaults in `kvm_provision/defaults/main.yml`
+  ```yaml
+	  ---
+	# defaults file for kvm_provision
+	base_image_name: Fedora-Cloud-Base-34-1.2.x86_64.qcow2
+	base_image_url: https://download.fedoraproject.org/pub/fedora/linux/releases/34/Cloud/x86_64/images/{{ base_image_name }}
+	base_image_sha: b9b621b26725ba95442d9a56cbaa054784e0779a9522ec6eafff07c6e6f717ea
+	libvirt_pool_dir: "/var/lib/libvirt/images"
+	vm_name: f34-dev
+	vm_vcpus: 2
+	vm_ram_mb: 2048
+	vm_net: default
+	vm_root_pass: test123
+	cleanup_tmp: no
+  ```
+- create your jinja template under `<your role>/templates`
+  - i used the one from the [redhat blog](https://www.redhat.com/sysadmin/build-VM-fast-ansible)
+  - i named it `kvm.xml.j2`
+  
+- create a task in `<your role>/tasks/main.yml`
+   ```yaml
+	---
+	# tasks file for kvm_provision
+	- name: gethosts
+	  debug:
+	    var: inventory_hostname
+	- name: Get VMs list
+	  become: true
+	  become_method: sudo
+	  become_user: root
+	  community.libvirt.virt:
+	    command: list_vms
+	  register: existing_vms
+	  changed_when: no
+   ```
+- ***reference and use your role in your playbook***
+  - you can reference the role in the play directly
+    - *this will fire the taks in the role before the tasks in the play*
+    ```yaml
+	 - hosts: dcworkshop1
+	  gather_facts: no
+	  become: true
+	  become_method: sudo
+	  become_user: root
+	  roles:
+	    - kvm_provision
+     ```
+  - you can also reference the role in a single task
+    ```yaml
+          - name: single task with role
+            include_role:
+                name: kvm_provision
+    ```
+---
+   
 ## compare commits in Gitub Actions
 ```yaml
 	- name: Checkout repository
