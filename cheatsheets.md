@@ -8,7 +8,52 @@
     - add your git user name  and paste the pat into the password field
     - ***DO NOT USE SSH + PASSWORD***
 --- 
+## Libvirt
+- install
+  ```bash
+     su root
+     dnf install qemu-kvm libvirt virt-install virt-viewer
+     for drv in qemu network nodedev nwfilter secret storage interface; do systemctl start virt${drv}d{,-ro,-admin}.socket; done
+  ```
+- create volume in default storage pool
+  ```bash
+  sudo qemu-img create -f qcow2 /var/lib/libvirt/images/your_volume.qcow2 2G
+  ```
+- use your volume
+  ```xml
+	 <devices>
+	    <emulator>/usr/libexec/qemu-kvm</emulator>
+	    <disk type='file' device='disk'>
+	      <source file='/var/lib/libvirt/images/your_volume.qcow2'/>
+	      <target dev='vda' bus='virtio'/>
+	    </disk>
+	    # ... more devices
+	 </devices>
+  ```
+  
+- boot from iso (virtual cd reader)
+  ```xml 
+     <devices>
+	<disk type='file' device='cdrom'>
+		<driver name='qemu' type='raw'/>
+	        <source file='/var/lib/libvirt/images/ubuntu-24.04-live-server-amd64.iso'/>
+	      	<target dev='hdb' bus='ide'/>
+	        <readonly/>
+	</disk>
+        # ... more devices
+  </devices>    
+  ```
 
+   - note that you have to use `machine='pc'` in the os section of your xml for debian and you also need to specify the boot device, which is our cdrom/hd.
+     - if the vm cant find any bootable os in our disk, it will look in cdrom, so you can set `boot dev='hd'`
+     - this is how it could look like:
+     ```xml
+	  <os>
+	    <type arch='x86_64' machine='pc'>hvm</type>
+	    <boot dev='hd'/>
+	  </os>
+      ```
+		    
 ## Ansible Variables, Secrets and Vault
 this is how you can use variables and secrets in ansible:
 ### 1. Variables as Constructor argument
