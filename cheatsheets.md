@@ -1,5 +1,34 @@
 # cheatsheets & Unreleased Guides
+## push gh actions workspace to docker hub
+```bash
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
 
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: my-docker-hub-namespace/my-docker-hub-repository
+
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: jipodhead/ilohelper-coll:latest
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          
+```
 ## Jenkins & Github
 ***jenkins has a weird way of signing in to git.***
 - 1. create a pat via dev settings in git
