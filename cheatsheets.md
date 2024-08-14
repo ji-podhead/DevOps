@@ -1,4 +1,52 @@
 # cheatsheets & Unreleased Guides
+## Synchronous vs. Asynchronous Encryption
+
+### Synchronous Encryption (Symmetric)
+
+- Same key for encryption and decryption
+- Fast and efficient
+- Example: AES (Advanced Encryption Standard)
+
+### Asynchronous Encryption (Asymmetric)
+
+- Different keys for encryption and decryption (public and private keys)
+- More secure, but slower
+- Example: RSA (Rivest-Shamir-Adleman)
+
+***Example:***
+   - Alice wants to send a secret message to Bob.
+   - Alice encrypts the message using Bob's public key.
+   - Alice sends the encrypted message to Bob.
+   - Bob receives the encrypted message and decrypts it using his private key.
+
+---
+
+## SSH and Signed SSH keys using CA
+- ssh uses async. encryption:
+  - The private key is stored on the client-side and is used to encrypt the authentication data. The private key is never shared with the server.
+  - The public key is stored on the server-side and is used to decrypt the authentication data. The public key is shared with the client.
+
+### CA-Signed Public Key
+
+When using a Certificate Authority (CA) to sign the public key, the client sends both the private key and the CA-signed public key to the server. The CA-signed public key is used to verify the client's identity, while the private key is used to encrypt the authentication data.
+
+### Server-Side Verification
+
+When the client sends the CA-signed public key to the server, the server uses the CA public key to verify the signature. The CA public key is stored on the server-side in a file specified by the TrustedUserCAKeys option in the SSHD configuration file (/etc/ssh/sshd_config).
+
+```
+# /etc/ssh/sshd_config
+...
+TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
+```
+In this case, the server uses the CA public key from the file /etc/ssh/trusted-user-ca-keys.pem to verify the signature of the CA-signed public key.
+
+If the signature is valid, the server accepts the client's authentication. If the signature is invalid, the server rejects the client's authentication.
+
+- ***Why Send Both Keys?***
+  - The client sends both the private key and the CA-signed public key to the server because the server needs to verify the client's identity using the CA public key.
+  - The private key is used to encrypt the authentication data, while the CA-signed public key is used to verify the client's identity.
+   
 ## push gh actions workspace to docker hub
 ```bash
     steps:
