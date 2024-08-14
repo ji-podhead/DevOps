@@ -46,7 +46,9 @@ If the signature is valid, the server accepts the client's authentication. If th
 - ***Why Send Both Keys?***
   - The client sends both the private key and the CA-signed public key to the server because the server needs to verify the client's identity using the CA public key.
   - The private key is used to encrypt the authentication data, while the CA-signed public key is used to verify the client's identity.
-   
+
+---
+
 ## push gh actions workspace to docker hub
 ```bash
     steps:
