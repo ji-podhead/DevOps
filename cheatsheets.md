@@ -1,4 +1,20 @@
 # cheatsheets & Unreleased Guides
+## Enter the matrix
+when your bored and listening to nice music, try this:
+```bash
+$ find / -type f -exec hexdump -C {} \
+```
+   - techno kommando
+
+## Zero Trust Access
+if you dont use ssh password, nor key for auth, then itsa possible that somebody can do arp spoofing and listen for your pub key and gains access to ALL machines that you sign in to.
+So  we dont wanna do that and we also dont want to sign eevery frkn ssh connection, so we need some kinda ssh  manager...
+so it turns out the best way  to secure your ssh connections is to use no sshd at all.
+yup makes sense, but what do we use instead? - a tool called zero trust access that does risk bases authentication for you, so we have a bunch of (risk based) factors  that are relevant not just your ssh keys, or passwords.
+So the way that works: 
+   - instead of logging to the device directly, you have some sort of ha ssh proxy that is your central ssh service
+   - zero trust access manager requires oauth and 2factor
+
 ## Synchronous vs. Asynchronous Encryption
 
 ### Synchronous Encryption (Symmetric)
