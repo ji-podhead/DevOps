@@ -2,7 +2,7 @@
 ## Enter the matrix
 when your bored and listening to nice music, try this:
 ```bash
-$ find / -type f -exec hexdump -C {} \
+$ find / -type f -exec hexdump -C {} \;
 ```
    - techno kommando
 
