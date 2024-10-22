@@ -1,4 +1,38 @@
 # cheatsheets & Unreleased Guides
+## Network Automation: Vlans - Network Segmentation - Firewall - Intrusion Detection
+So i wanted to create a secure infrastructure in my datacenter / private cloud.
+
+### Problem
+- ***you may underestimate the power of layer2***
+	- ***depending on your infrastructure this can give hackers a huge attack space*** 
+  - peopel might forget about this if they are hosting multiple vms and subnets on the same machine
+- the vms/containers on the same machine can still talk to each other over layer2 since they are sharing the same nic (master)
+- if an atacker manages to break out, or hack into a container, he can performe a variety of attacks depending on the circumstances
+
+----
+
+### Possibe Attacks
+  - ***Brute Force Attacks*** to crack password
+  - ***DHCP Attacks***
+    - this can have a variety of outcome. <br> most likely an attacker would ddos your dhcp and spoof it. <br>In order he can make use of DNS attacks and vice versa
+    - he can of course send a new lease to a sensible page like vault. <br> Then he can replace that ip with his own phishing site <br> He also can also perform a MMTM to redirect via http router to the target ip for example    
+  - ***DNS Attacks*** ****(pls see my dns notes)****
+  	- spoof the entire dns by d(d)os and spoof a sensible page to fish password and maybe even redirect to the orig. ip (MMTM)
+  	- dns cache poisining 
+  	- ask the dns for all your dns entries
+   	  - bring down the server and then spoof the ip directly and fish your password
+  - ***SSH Attacks*** ****(pls see my ssh notes)****
+  - ***mac spoofing***
+    - bypass mac based dhcp filtering
+      - you can run out of leases
+        - you maybe loose connection
+        - you will get ddosed and your machines overheat, run out of ram, run out of rom, or may even break
+    - duplicated ip adresses (who knows what will happen)
+      -  network can be completely broken
+      -  router will continue its original route, unles:
+      -  you might reconnect / lease runs out and the spoofed ip will be the target adress for the packets  
+----
+
 ## Enter the matrix
 when your bored and listening to nice music, try this:
 ```bash
