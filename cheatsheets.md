@@ -1,27 +1,25 @@
 # cheatsheets & Unreleased Guides
 ## Network Automation: Vlans - Network Segmentation - Firewall - Intrusion Detection
-So i wanted to create a secure infrastructure in my datacenter / private cloud.
+So i wanted to create a secure infrastructure in my datacenter / private cloud.... that lead me to this article
 
-### Problem
-- ***you may underestimate the power of layer2***
-	- ***depending on your infrastructure this can give hackers a huge attack space*** 
-  - peopel might forget about this if they are hosting multiple vms and subnets on the same machine
-- the vms/containers on the same machine can still talk to each other over layer2 since they are sharing the same nic (master)
-- if an atacker manages to break out, or hack into a container, he can performe a variety of attacks depending on the circumstances
+### Why you may underestimate the power of layer2 and why you should isolate your VM Traffic
 
-----
-
-### Possibe Attacks
+peopel might forget about this if they are hosting multiple vms and subnets on the same machine:
+ - the vms/containers on the same machine can still talk to each other over layer2 since they are sharing the same nic (master)
+ - if an atacker manages to break out, or hack into a container, he can performe a variety of attacks depending on the circumstances
+ ***depending on your infrastructure this can give hackers a huge attack space*** 
+   
+#### Possibe Attacks
   - ***Brute Force Attacks*** to crack password
-  - ***DHCP Attacks***
-    - this can have a variety of outcome. <br> most likely an attacker would ddos your dhcp and spoof it. <br>In order he can make use of DNS attacks and vice versa
-    - he can of course send a new lease to a sensible page like vault. <br> Then he can replace that ip with his own phishing site <br> He also can also perform a MMTM to redirect via http router to the target ip for example    
   - ***DNS Attacks*** ****(pls see my dns notes)****
   	- spoof the entire dns by d(d)os and spoof a sensible page to fish password and maybe even redirect to the orig. ip (MMTM)
   	- dns cache poisining 
   	- ask the dns for all your dns entries
    	  - bring down the server and then spoof the ip directly and fish your password
-  - ***SSH Attacks*** ****(pls see my ssh notes)****
+  - ***DHCP Attacks***
+    - this can have a variety of outcome. <br> most likely an attacker would ddos your dhcp and spoof it. <br>In order he can make use of DNS attacks and vice versa
+    - he can of course send a new lease to a sensible page like vault. <br> Then he can replace that ip with his own phishing site <br> He also can also perform a MMTM to redirect via http router to the target ip for example    
+
   - ***mac spoofing***
     - bypass mac based dhcp filtering
       - you can run out of leases
@@ -31,6 +29,29 @@ So i wanted to create a secure infrastructure in my datacenter / private cloud.
       -  network can be completely broken
       -  router will continue its original route, unles:
       -  you might reconnect / lease runs out and the spoofed ip will be the target adress for the packets  
+
+  - ***SSH Attacks*** ****(pls see my ssh notes)****
+
+----
+
+### vlans
+![grafik](https://github.com/user-attachments/assets/0d634ad0-6bc5-4048-9b77-0bc85e45f04a)
+****image source: [openvswitch](https://docs.openvswitch.org/en/latest/howto/vlan/)****
+
+Vlans allow you to send multiple networks over a single conection.<br>
+
+-----
+you can transport and share the networks using a method called ***trunking***<br>
+  - Trunking is a networking technology that allows multiple network segments to be combined into a single logical link, enabling efficient data transmission across multiple ports while maintaining separation between individual networks.
+Shareable 
+-----
+
+
+| Type | Description | Purpose | Key Characteristics |
+|------|-------------|---------|--------------------|
+| Untagged VLAN | Untagged VLANs, often referred to as "native" or "default" VLANs, do not have any VLAN tag information | • Used as a fallback or default VLAN <br>• Often associated with management traffic or network services <br>• Can simplify configuration in certain scenarios | • No VLAN tag is present in the frame <br>• Typically associated with the native VLAN on trunk links <br>• Frames belong to the default VLAN configuration |
+| Tagged VLAN | Tagged VLANs offer greater flexibility and are commonly used in complex networks <br> •Untagged VLANs can simplify configurations in simpler network topologies <br> •Trunk ports typically carry both tagged and untagged traffic <br> •Access ports usually carry only untagged traffic for a specific VLAN <br> •Tagged VLANs, also known as IEEE 802.1Q VLANs, use VLAN tags to identify traffic belonging to specific virtual LANs. These tags are added to Ethernet frames at the network switch level | • Provides network segmentation and isolation <br>• Supports multiple broadcast domains within a single physical network <br>• Facilitates easier network management and troubleshooting | • Frames are encapsulated with a 4-byte tag <br>• The tag includes a VLAN ID (VID) <br>• Allows for multiple VLANs on a single physical link <br>• Enables trunking between switches |
+
 ----
 
 ## Enter the matrix
