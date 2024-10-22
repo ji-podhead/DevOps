@@ -1,5 +1,5 @@
 # cheatsheets & Unreleased Guides
-## Network Automation: Vlans - Network Segmentation - Firewall - Intrusion Detection
+## Network Automation: Vlans - Network Segmentation - Firewall & Intrusion Detection
 So i wanted to create a secure infrastructure in my datacenter / private cloud.... that lead me to this article
 
 ### Why you may underestimate the power of layer2 and why you should isolate your VM Traffic
@@ -34,17 +34,52 @@ peopel might forget about this if they are hosting multiple vms and subnets on t
 
 ----
 
-### vlans
-![grafik](https://github.com/user-attachments/assets/0d634ad0-6bc5-4048-9b77-0bc85e45f04a)
-****image source: [openvswitch](https://docs.openvswitch.org/en/latest/howto/vlan/)****
+### segment local network traffic using iptables
+- we will create 2 bridges for our wms, forward to our router (192.168.1.1) and drop connections between the bridges 
 
+```bash
+#!/bin/bash
+
+# Create two separate Bridge Interfaces
+ip link add br0 type bridge
+ip link add br1 type bridge
+
+# Configure the Bridge Interfaces
+ip addr add 192.168.1.100/24 dev br0
+ip addr add 192.168.2.100/24 dev br1
+
+# Activate the Bridge Interfaces
+ip link set br0 up
+ip link set br1 up
+
+# Configure iptables for forwarding from br0 to the target IP
+iptables -A FORWARD -i br0 -d 192.168.1.1 -j ACCEPT
+
+# Configure iptables for forwarding from br1 to the target IP
+iptables -A FORWARD -i br1 -d 192.168.1.1 -j ACCEPT
+
+# Block traffic between the bridges
+iptables -A FORWARD -i br0 -o br1 -j DROP
+iptables -A FORWARD -i br1 -o br0 -j DROP
+
+# Add NAT entries to ensure outgoing connections are routed correctly
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+```
+  - this is not tested
+    
+----
+
+### Vlans and network segmentation
 Vlans allow you to send multiple networks over a single conection.<br>
 
------
+#### Trunking
 you can transport and share the networks using a method called ***trunking***<br>
   - Trunking is a networking technology that allows multiple network segments to be combined into a single logical link, enabling efficient data transmission across multiple ports while maintaining separation between individual networks.
 Shareable 
------
+
+----
+
+#### tagged and untagged Vlans
 
 
 | Type | Description | Purpose | Key Characteristics |
@@ -54,6 +89,12 @@ Shareable
 
 ----
 
+### vms, ovs bridges and tagged vlans
+![grafik](https://github.com/user-attachments/assets/0d634ad0-6bc5-4048-9b77-0bc85e45f04a)
+****image source: [openvswitch](https://docs.openvswitch.org/en/latest/howto/vlan/)****
+
+
+---
 ## Enter the matrix
 when your bored and listening to nice music, try this:
 ```bash
