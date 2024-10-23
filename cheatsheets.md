@@ -168,7 +168,7 @@ we will create 2 tagged vlans without a  wlan aware switch
 
 ----
 
-### isolate vm traffic using tagged vlans
+### isolate vm traffic using tagged vlans and ovs bridges
 ![grafik](https://github.com/user-attachments/assets/0d634ad0-6bc5-4048-9b77-0bc85e45f04a)
 ****image source: [openvswitch](https://docs.openvswitch.org/en/latest/howto/vlan/)****
 
