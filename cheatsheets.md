@@ -111,7 +111,7 @@ Before we dropped the connections between our VM-bridges using iptables in users
     
 #### Vlans and network segmentation
 Vlans allow you to send multiple networks over a single conection.<br>
-you can transport and share the networks over layer3 using a method called ***trunking*** without routing tables<br>
+you can transport and share the networks over layer3 using a method called ***trunking*** <br>
 
 
 ##### Trunking
