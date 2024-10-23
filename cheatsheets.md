@@ -174,6 +174,12 @@ we will create 2 tagged vlans without a  wlan aware switch
 ![grafik](https://github.com/user-attachments/assets/0d634ad0-6bc5-4048-9b77-0bc85e45f04a)
 ****image source: [openvswitch](https://docs.openvswitch.org/en/latest/howto/vlan/)****
 
+As you cans ee in the image, we have 2 NIC's in this setup.<br>
+This is required if you want to make sure not to loose your connection (like ssh) since your physical network interface will be the slave of the ovs-bridge.<br>
+You cant have duplicated IP's on different Interfaces at the same time.<br>
+So if you use your main NIC as both your Management- and Data Network, you need to delete & flush its IP, as well as setting it to 0.0.0.0/0.<br>
+Thats why you can loose your ssh connection and it might require you to access the machine directly.  
+
  #### install the requirements
  
  ```bash
