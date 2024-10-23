@@ -49,7 +49,8 @@ peopel might forget about this if they are hosting multiple vms and subnets on t
 
 ----
 
-### segment local network traffic using iptables
+### Network Segmentation
+#### segment local network traffic using iptables
 - we will create 2 bridges for our wms, forward to our router (192.168.1.1) and drop connections between the bridges 
 
 ```bash
@@ -80,20 +81,38 @@ iptables -A FORWARD -i br1 -o br0 -j DROP
 # Add NAT entries to ensure outgoing connections are routed correctly
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 ```
-  - this is not tested
-    
-----
 
-### Vlans and network segmentation
+-----
+
+#### Network FIltering using eBPF and XDP
+Before we dropped the connections between our VM-bridges using iptables in userspace,  but theres another and more safe way of doing this.
+##### eBPF
+- eBPF is a framework that let you run code in kernel space.  
+- this is not onl great for monitoring using telemtry data, but you can also drop packets before they even reach the userspace.
+
+##### XDP
+ - XDP (eXpress Data Path) is a high-performance networking technology developed by Red Hat that allows for efficient packet processing at the Linux kernel level. It enables direct access to hardware acceleration without going through the traditional network stack. 
+ - So basically XDP allows us to create kernalspace based Network filters or load balancers without compiling a complete eBPF script.<br>
+ This wouldnt be to hard, but XDP spares us a bunch of time and its also directly implemented into suricata, <br>
+ so we can combine both our intrusion detection system and our network filters
+
+
+##### sources
+- suricata: [ebpf & xdp](https://suricatacn.readthedocs.io/zh-cn/suricata-4.1.0-beta1/capture-hardware/ebpf-xdp.html)
+- stamus-networks: [Introduction to eBPF and XDP support in Suricata ](https://www.stamus-networks.com/hubfs/Library/Documents%20%28PDFs%29/StamusNetworks-WP-eBF-XDP-092021-1.pdf)
+
+-----
+    
+#### Vlans and network segmentation
 Vlans allow you to send multiple networks over a single conection.<br>
 you can transport and share the networks over layer3 using a method called ***trunking*** without routing tables<br>
 
 
-#### Trunking
+##### Trunking
   - Trunking is a networking technology that allows multiple network segments to be combined into a single logical link, enabling efficient data transmission across multiple ports while maintaining separation between individual networks.
 Shareable 
 
-----
+
 
 #### tagged and untagged Vlans
 
@@ -103,28 +122,51 @@ Shareable
 | Untagged VLAN | Untagged VLANs, often referred to as "native" or "default" VLANs, do not have any VLAN tag information | • Used as a fallback or default VLAN <br>• Often associated with management traffic or network services <br>• Can simplify configuration in certain scenarios | • No VLAN tag is present in the frame <br>• Typically associated with the native VLAN on trunk links <br>• Frames belong to the default VLAN configuration |
 | Tagged VLAN | Tagged VLANs offer greater flexibility and are commonly used in complex networks <br> •Untagged VLANs can simplify configurations in simpler network topologies <br> •Trunk ports typically carry both tagged and untagged traffic <br> •Access ports usually carry only untagged traffic for a specific VLAN <br> •Tagged VLANs, also known as IEEE 802.1Q VLANs, use VLAN tags to identify traffic belonging to specific virtual LANs. These tags are added to Ethernet frames at the network switch level | • Provides network segmentation and isolation <br>• Supports multiple broadcast domains within a single physical network <br>• Facilitates easier network management and troubleshooting | • Frames are encapsulated with a 4-byte tag <br>• The tag includes a VLAN ID (VID) <br>• Allows for multiple VLANs on a single physical link <br>• Enables trunking between switches |
 
+-----
+
+#### OVS & Linux Bridges
+
+| Bridge | Description | Characteristics |
+| --- | --- | --- |
+| Linux Bridge | Linux bridges are native Linux network devices that allow you to create virtual network segments within a single physical network interface. | Native to Linux kernel<br>• Created using brctl addbr command <br>• Managed by brctl utility<br>• Limited to Linux-specific features |
+| OVS Bridge | OVS bridges are software switches implemented as part of the Open vSwitch project | • Software implementation running in userspace<br> • Provides more advanced features compared to Linux bridges <br>• Highly configurable and extensible • Supports distributed virtual switching |
+
+-----
+
+#### Tagged vlans and Linux Bridges
+
+we will create 2 tagged vlans without a  wlan aware switch
+- *****this will not work with libvirt!!!*****
+  - libvirt + linux bridges are not vlan-aware without a `802.1Q-compliant / trunkable switch`
+  - if you want to use libvirt and tagged vlans, pls see the section: *Isolate VM traffic using tagged vlans*
+- however you might do your routing and switching elsewhere (like on your openwrt router)
+- this would require to split the network received by your host.
+- this is how you do this:
+   
+```
+#enable vlan filtering on our bridge					
+ sudo ip link set dev virbr1 type bridge vlan_filtering 1 vlan_default_pvid 1
+
+# add vlans to our interface
+ sudo ip link add link enp2s0 name vlan.0.1 type vlan id 1
+ sudo ip link add link enp2s0 name vlan.0.2 type vlan id 2
+
+# start the vlan-interface
+ sudo ip link set vlan.0.1 up
+ sudo ip link set vlan.0.2 up
+ 
+ # add vlan to our bridge
+ ip link set vlan.0.1 master virbr1
+  ip link set vlan.0.2 master virbr1
+ 
+ # add ip and subnet
+ sudo ip addr add 192.168.0.4/24 dev vlan.0.1
+ sudo ip addr add 192.168.0.5/24 dev vlan.0.2
+```
+
 ----
 
-### Network FIltering using eBPF and XDP
-Before we dropped the connections between our VM-bridges using iptables in userspace,  but theres another and more safe way of doing this.
-#### eBPF
-- eBPF is a framework that let you run code in kernel space.  
-- this is not onl great for monitoring using telemtry data, but you can also drop packets before they even reach the userspace.
-
-#### XDP
- - XDP (eXpress Data Path) is a high-performance networking technology developed by Red Hat that allows for efficient packet processing at the Linux kernel level. It enables direct access to hardware acceleration without going through the traditional network stack. 
- - So basically XDP allows us to create kernalspace based Network filters or load balancers without compiling a complete eBPF script.<br>
- This wouldnt be to hard, but XDP spares us a bunch of time and its also directly implemented into suricata, <br>
- so we can combine both our intrusion detection system and our network filters
-
-
-   ****sources:****
-   - suricata: [ebpf & xdp](https://suricatacn.readthedocs.io/zh-cn/suricata-4.1.0-beta1/capture-hardware/ebpf-xdp.html)
-   - stamus-networks: [Introduction to eBPF and XDP support in Suricata ](https://www.stamus-networks.com/hubfs/Library/Documents%20%28PDFs%29/StamusNetworks-WP-eBF-XDP-092021-1.pdf)
-
-----
-
-### vms, ovs bridges and tagged vlans
+### isolate vm traffic using tagged vlans
 ![grafik](https://github.com/user-attachments/assets/0d634ad0-6bc5-4048-9b77-0bc85e45f04a)
 ****image source: [openvswitch](https://docs.openvswitch.org/en/latest/howto/vlan/)****
 
