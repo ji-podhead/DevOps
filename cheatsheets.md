@@ -278,6 +278,10 @@ Add the Network in your VM Configuration and edit the XML accordingly:
 </interface>
 ```
 
+##### sources
+- openvswitch: [vlans](https://docs.openvswitch.org/en/latest/faq/vlan/)
+- openvswitch: [isolate vm traffic](https://docs.openvswitch.org/en/latest/howto/vlan/)
+
 ---
 ## Enter the matrix
 when your bored and listening to nice music, try this:
