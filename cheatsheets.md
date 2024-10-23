@@ -101,6 +101,8 @@ Before we dropped the connections between our VM-bridges using iptables in users
 - suricata: [ebpf & xdp](https://suricatacn.readthedocs.io/zh-cn/suricata-4.1.0-beta1/capture-hardware/ebpf-xdp.html)
 - stamus-networks: [Introduction to eBPF and XDP support in Suricata ](https://www.stamus-networks.com/hubfs/Library/Documents%20%28PDFs%29/StamusNetworks-WP-eBF-XDP-092021-1.pdf)
 
+#### TODO
+- provide examples
 -----
     
 #### Vlans and network segmentation
@@ -128,8 +130,8 @@ Shareable
 
 | Bridge | Description | Characteristics |
 | --- | --- | --- |
-| Linux Bridge | Linux bridges are native Linux network devices that allow you to create virtual network segments within a single physical network interface. | Native to Linux kernel<br>• Created using brctl addbr command <br>• Managed by brctl utility<br>• Limited to Linux-specific features |
-| OVS Bridge | OVS bridges are software switches implemented as part of the Open vSwitch project | • Software implementation running in userspace<br> • Provides more advanced features compared to Linux bridges <br>• Highly configurable and extensible • Supports distributed virtual switching |
+| Linux Bridge | Linux bridges are native Linux network devices that allow you to create virtual network segments within a single physical network interface. | • native to Linux kernel<br>• Created using brctl addbr command <br>• Managed by brctl utility<br>• Limited to Linux-specific features |
+| OVS Bridge | OVS bridges are software switches implemented as part of the Open vSwitch project | • provides a vlan-aware switch on your host to isolate vm traffic<br> • Software implementation running in userspace<br> • Highly configurable and extensible • Supports distributed virtual switching |
 
 -----
 
@@ -143,7 +145,7 @@ we will create 2 tagged vlans without a  wlan aware switch
 - this would require to split the network received by your host.
 - this is how you do this:
    
-```
+```bash
 #enable vlan filtering on our bridge					
  sudo ip link set dev virbr1 type bridge vlan_filtering 1 vlan_default_pvid 1
 
@@ -170,6 +172,14 @@ we will create 2 tagged vlans without a  wlan aware switch
 ![grafik](https://github.com/user-attachments/assets/0d634ad0-6bc5-4048-9b77-0bc85e45f04a)
 ****image source: [openvswitch](https://docs.openvswitch.org/en/latest/howto/vlan/)****
 
+ #### install the requirements
+ 
+ ```bash
+# install openvswitch to create a vlan-aware switch on your host
+$ sudo dnf install openvswitch
+# install the networkManager plugin that is required to create the ovs network devices
+$ sudo dnf install NetworkManager-ovs
+```
 
 ---
 ## Enter the matrix
