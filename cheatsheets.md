@@ -113,6 +113,8 @@ you can transport and share the networks over layer3 using a method called ***tr
 ##### Trunking
   - Trunking is a networking technology that allows multiple network segments to be combined into a single logical link, enabling efficient data transmission across multiple ports while maintaining separation between individual networks.
 Shareable 
+![trunking](https://upload.wikimedia.org/wikipedia/commons/4/4d/Router_on_a_stick_concept.png)
+****image source: [wikipedia: router on a stick](https://en.wikipedia.org/wiki/Router_on_a_stick)****
 
 
 
