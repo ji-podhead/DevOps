@@ -192,21 +192,35 @@ $ sudo dnf install NetworkManager-ovs
 #### create a virtual NIC (if you only got a single physical NIC)
 ```bash
 # Create a new Bridge
-ovs-vsctl add-br ovs-br-int
-
-# Add eth0 to the Bridge
-ovs-vsctl add-port br-int eth0
+$ ovs-vsctl add-br br-int
 
 # Create a Virtual Interface
-ip link add name veth0-a type macvlan mode bridge
+$ ip link add name veth0-a type macvlan mode bridge
+
+# Add the Virtual Interface to the Bridge
+$ ovs-vsctl add-port br-int veth0-a
 
 # Activate the virtual Interface
-ip link set veth0-a up
+$ ip link set veth0-a up
 
 # Configure the IP Address
-ip addr add 192.168.1.100/24 dev veth0-a
+$ ip addr add 192.168.1.100/24 dev veth0-a
 ```
-#### Create the OVS-Bridge and Tap Devices
+#### Add the Port to our Virtual NIC
+- make sure not to use the ip of your physical NIC here
+```bash
+# Add the vlans
+$ ovs-vsctl add-port br-int vlan1 tag=1 -- set interface vlan1 type=internal
+$ ovs-vsctl add-port br-int vlan1 tag=2 -- set interface vlan2 type=internal
+
+# Add the Ips to the vlans
+$ ip addr add 192.168.1.1/24 dev vlan1
+$ ip addr add 192.168.2.1/24 dev vlan2
+
+# Start the Vlans/tap interfaces
+$ ip link set vlan1 up
+$ ip link set vlan2 up
+```
 
 ---
 ## Enter the matrix
