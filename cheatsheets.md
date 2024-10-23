@@ -10,8 +10,8 @@ So i wanted to create a secure infrastructure in my datacenter / private cloud..
 
 peopel might forget about this if they are hosting multiple vms and subnets on the same machine:
  - the vms/containers on the same machine can still talk to each other over layer2 since they are sharing the same nic (master)
- - if an atacker manages to break out, or hack into a container, he can performe a variety of attacks depending on the circumstances
- ***depending on your infrastructure this can give hackers a huge attack space*** 
+ - if an atacker manages to break out, or hack into a container...
+ - this can have various consequences. ***this can give hackers a huge attack space*** 
    
 #### Possibe Attacks
   - ***Brute Force Attacks*** to crack password
