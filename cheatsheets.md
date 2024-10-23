@@ -189,6 +189,25 @@ $ sudo dnf install openvswitch
 $ sudo dnf install NetworkManager-ovs
 ```
 
+#### create a virtual NIC (if you only got a single physical NIC)
+```bash
+# Create a new Bridge
+ovs-vsctl add-br ovs-br-int
+
+# Add eth0 to the Bridge
+ovs-vsctl add-port br-int eth0
+
+# Create a Virtual Interface
+ip link add name veth0-a type macvlan mode bridge
+
+# Activate the virtual Interface
+ip link set veth0-a up
+
+# Configure the IP Address
+ip addr add 192.168.1.100/24 dev veth0-a
+```
+#### Create the OVS-Bridge and Tap Devices
+
 ---
 ## Enter the matrix
 when your bored and listening to nice music, try this:
