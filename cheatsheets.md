@@ -4,18 +4,7 @@ So i wanted to create a secure infrastructure in my datacenter / private cloud..
 
 
 
-### IDS (Intrusion Detection System) 
-An IDS is a system designed to monitor computer systems for signs of unauthorized access or malicious activities.<br> 
-It analyzes network traffic and system logs to identify potential security threats. In the following we will use Suricata as our IDS
-It recommended to use multi-wan for IDS rather than routing it directly through since this will slown down your traffic.
-#### Suricata
-Suricata is an open-source network intrusion detection engine and analysis platform. It's known for its high performance and ability to detect sophisticated attacks. Key features include:
-- Multi-threaded architecture and GPU-support for handling large volumes of traffic
-- Support for both signature-based and anomaly-based detection
-- Ability to perform packet capture and analysis
-- eBPF and XDP for network-filtering, loadbalancing and routing in kernelspace
-- Integration with other security tools and platforms (comes as plugin for opnsense)
-----
+
 
 ### Why you should'nt underestimate the power of layer2 and why you should isolate your VM Traffic
 
@@ -46,6 +35,21 @@ peopel might forget about this if they are hosting multiple vms and subnets on t
       -  you might reconnect / lease runs out and the spoofed ip will be the target adress for the packets  
 
   - ***SSH Attacks*** ****(pls see my ssh notes)****
+
+----
+
+### IDS (Intrusion Detection System) 
+An IDS is a system designed to monitor computer systems for signs of unauthorized access or malicious activities.<br> 
+It analyzes network traffic and system logs to identify potential security threats. In the following we will use Suricata as our IDS
+It recommended to use multi-wan for IDS rather than routing it directly through since this will slown down your traffic.
+
+#### Suricata
+Suricata is an open-source network intrusion detection engine and analysis platform. It's known for its high performance and ability to detect sophisticated attacks. Key features include:
+- Multi-threaded architecture and GPU-support for handling large volumes of traffic
+- Support for both signature-based and anomaly-based detection
+- Ability to perform packet capture and analysis
+- eBPF and XDP for network-filtering, loadbalancing and routing in kernelspace
+- Integration with other security tools and platforms (comes as plugin for opnsense)
 
 ----
 
