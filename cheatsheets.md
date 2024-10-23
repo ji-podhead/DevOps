@@ -1,8 +1,23 @@
 # cheatsheets & Unreleased Guides
-## Network Automation: Vlans - Network Segmentation - Firewall & Intrusion Detection
+## Network Segmentation, Firewall & Intrusion Detection
 So i wanted to create a secure infrastructure in my datacenter / private cloud.... that lead me to this article
 
-### Why you may underestimate the power of layer2 and why you should isolate your VM Traffic
+
+
+### IDS (Intrusion Detection System) 
+An IDS is a system designed to monitor computer systems for signs of unauthorized access or malicious activities.<br> 
+It analyzes network traffic and system logs to identify potential security threats. In the following we will use Suricata as our IDS
+
+#### Suricata
+Suricata is an open-source network intrusion detection engine and analysis platform. It's known for its high performance and ability to detect sophisticated attacks. Key features include:
+- Multi-threaded architecture and GPU-support for handling large volumes of traffic
+- Support for both signature-based and anomaly-based detection
+- Ability to perform packet capture and analysis
+- eBPF and XDP for network-filtering, loadbalancing and routing in kernelspace
+- Integration with other security tools and platforms (comes as plugin for opnsense)
+----
+
+### Why you should'nt underestimate the power of layer2 and why you should isolate your VM Traffic
 
 peopel might forget about this if they are hosting multiple vms and subnets on the same machine:
  - the vms/containers on the same machine can still talk to each other over layer2 since they are sharing the same nic (master)
@@ -71,9 +86,10 @@ iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
 ### Vlans and network segmentation
 Vlans allow you to send multiple networks over a single conection.<br>
+you can transport and share the networks over layer3 using a method called ***trunking*** without routing tables<br>
+
 
 #### Trunking
-you can transport and share the networks using a method called ***trunking***<br>
   - Trunking is a networking technology that allows multiple network segments to be combined into a single logical link, enabling efficient data transmission across multiple ports while maintaining separation between individual networks.
 Shareable 
 
@@ -86,6 +102,25 @@ Shareable
 |------|-------------|---------|--------------------|
 | Untagged VLAN | Untagged VLANs, often referred to as "native" or "default" VLANs, do not have any VLAN tag information | • Used as a fallback or default VLAN <br>• Often associated with management traffic or network services <br>• Can simplify configuration in certain scenarios | • No VLAN tag is present in the frame <br>• Typically associated with the native VLAN on trunk links <br>• Frames belong to the default VLAN configuration |
 | Tagged VLAN | Tagged VLANs offer greater flexibility and are commonly used in complex networks <br> •Untagged VLANs can simplify configurations in simpler network topologies <br> •Trunk ports typically carry both tagged and untagged traffic <br> •Access ports usually carry only untagged traffic for a specific VLAN <br> •Tagged VLANs, also known as IEEE 802.1Q VLANs, use VLAN tags to identify traffic belonging to specific virtual LANs. These tags are added to Ethernet frames at the network switch level | • Provides network segmentation and isolation <br>• Supports multiple broadcast domains within a single physical network <br>• Facilitates easier network management and troubleshooting | • Frames are encapsulated with a 4-byte tag <br>• The tag includes a VLAN ID (VID) <br>• Allows for multiple VLANs on a single physical link <br>• Enables trunking between switches |
+
+----
+
+### Network FIltering using eBPF and XDP
+Before we dropped the connections between our VM-bridges using iptables in userspace,  but theres another and more safe way of doing this.
+#### eBPF
+- eBPF is a framework that let you run code in kernel space.  
+- this is not onl great for monitoring using telemtry data, but you can also drop packets before they even reach the userspace.
+
+#### XDP
+ - XDP (eXpress Data Path) is a high-performance networking technology developed by Red Hat that allows for efficient packet processing at the Linux kernel level. It enables direct access to hardware acceleration without going through the traditional network stack. 
+ - So basically XDP allows us to create kernalspace based Network filters or load balancers without compiling a complete eBPF script.<br>
+ This wouldnt be to hard, but XDP spares us a bunch of time and its also directly implemented into suricata, <br>
+ so we can combine both our intrusion detection system and our network filters
+
+
+   ****sources:****
+   - suricata: [ebpf & xdp](https://suricatacn.readthedocs.io/zh-cn/suricata-4.1.0-beta1/capture-hardware/ebpf-xdp.html)
+   - stamus-networks: [Introduction to eBPF and XDP support in Suricata ](https://www.stamus-networks.com/hubfs/Library/Documents%20%28PDFs%29/StamusNetworks-WP-eBF-XDP-092021-1.pdf)
 
 ----
 
