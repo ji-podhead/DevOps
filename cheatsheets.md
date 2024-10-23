@@ -7,7 +7,7 @@ So i wanted to create a secure infrastructure in my datacenter / private cloud..
 ### IDS (Intrusion Detection System) 
 An IDS is a system designed to monitor computer systems for signs of unauthorized access or malicious activities.<br> 
 It analyzes network traffic and system logs to identify potential security threats. In the following we will use Suricata as our IDS
-
+It recommended to use multi-wan for IDS rather than routing it directly through since this will slown down your traffic.
 #### Suricata
 Suricata is an open-source network intrusion detection engine and analysis platform. It's known for its high performance and ability to detect sophisticated attacks. Key features include:
 - Multi-threaded architecture and GPU-support for handling large volumes of traffic
@@ -171,6 +171,8 @@ we will create 2 tagged vlans without a  wlan aware switch
 ----
 
 ### isolate vm traffic using tagged vlans and ovs bridges
+
+#### Management and Data Network
 ![grafik](https://github.com/user-attachments/assets/0d634ad0-6bc5-4048-9b77-0bc85e45f04a)
 ****image source: [openvswitch](https://docs.openvswitch.org/en/latest/howto/vlan/)****
 
@@ -189,7 +191,21 @@ $ sudo dnf install openvswitch
 $ sudo dnf install NetworkManager-ovs
 ```
 
-#### create a virtual NIC (if you only got a single physical NIC)
+#### Virtual NIC, or bridge instead of using a second physical NIC
+You can use a bridge but this is not recommended, hence this will drastically slow down your traffic.   
+##### using a bridge
+```bash 
+$  brctl addbr br0
+$ brctl addif br0 eth0
+$ ifconfig br0 up
+$ ip addr add 192.168.0.1/24 dev br0
+$ ip route add default via 192.168.1.1 dev br0
+
+# Test it
+$ ip addr show br0
+$ ip route show
+```
+##### using a virtual NIC
 ```bash
 # Create a new Bridge
 $ ovs-vsctl add-br br-int
@@ -220,6 +236,46 @@ $ ip addr add 192.168.2.1/24 dev vlan2
 # Start the Vlans/tap interfaces
 $ ip link set vlan1 up
 $ ip link set vlan2 up
+```
+#### Create libvirt vlan-aware virtual network
+You can either use the cli or the virt-manager UI.<br>
+However you will need to edit the XML manually in virt-manager, so make sure to allow this in the settings.<br>
+<br>
+edit the XML accordingly:
+```xml
+<network connections="1">
+  <name>br0</name>
+  <uuid><your uuid></uuid>
+  <forward mode="bridge"/>
+  <bridge name="<your Virtual Network>" />
+  <virtualport type="openvswitch"/>
+  <portgroup name="vlan-1" default="yes">
+  </portgroup>
+  <portgroup name="vlan-2">
+    <vlan>
+      <tag id="2"/>
+    </vlan>
+  </portgroup>
+  <portgroup name="vlan-all">
+    <vlan trunk="yes">
+      <tag id="1"/>
+      <tag id="2"/>
+    </vlan>
+  </portgroup>
+</network>
+```
+#### Add the virtual network to your VM
+Add the Network in your VM Configuration and edit the XML accordingly:
+```xml
+<interface type="bridge">
+  <mac address= "<your mac>" />
+  <source bridge= "<your Virtual Network>"/>
+  <virtualport type="openvswitch">
+    <parameters interfaceid= "<your interface id>" />
+  </virtualport>
+  <model type="virtio"/>
+  <address type="pci" domain="0x0000" bus="0x00" slot="0x02" function="0x0"/>
+</interface>
 ```
 
 ---
