@@ -184,7 +184,7 @@ As you cans ee in the image, we have 2 NIC's in this setup.<br>
 This is required if you want to make sure not to loose your connection (like ssh) since your physical network interface will be the slave of the ovs-bridge.<br>
 You cant have duplicated IP's on different Interfaces at the same time.<br>
 So if you use your main NIC as both your Management- and Data Network, you need to delete & flush its IP, as well as setting it to 0.0.0.0/0.<br>
-Thats why you can loose your ssh connection and it might require you to access the machine directly.  
+Thats why you can loose your ssh connection and it might require you to access the machine directly.  However i wrote a script and [Ansible Collection](https://galaxy.ansible.com/ui/repo/published/ji_podhead/ovs_bridge/)
 
  #### install the requirements
  
@@ -213,7 +213,11 @@ nmcli c add type ovs-interface slave-type ovs-port conn.interface vlan2 master v
 
 nmcli conn add type ethernet conn.interface enp2s0 master interface_port autoconnect yes && ip addr flush dev enp2s0 && nmcli con up ovs-slave-enp2s0 && ip addr add 192.168.1.100/24 dev vlanbr
 ```
-#### Create OVS-Bridge and tagged Vlans using my Ansible Collection
+#### Create OVS-Bridge and tagged Vlans using my [Ansible Collection](https://galaxy.ansible.com/ui/repo/published/ji_podhead/ovs_bridge/)
+##### Install my Collection
+```bash
+ ansible-galaxy collection install ji_podhead.ovs_bridge
+```
 ##### Install Dependencies
 ```
 - name: Ensure Open vSwitch is installed
