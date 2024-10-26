@@ -194,52 +194,24 @@ $ sudo dnf install openvswitch
 # install the networkManager plugin that is required to create the ovs network devices
 $ sudo dnf install NetworkManager-ovs
 ```
-
-#### Virtual NIC, or bridge instead of using a second physical NIC
-You can use a bridge but this is not recommended, hence this will drastically slow down your traffic.   
-##### using a bridge
-```bash 
-$  brctl addbr br0
-$ brctl addif br0 eth0
-$ ifconfig br0 up
-$ ip addr add 192.168.0.1/24 dev br0
-$ ip route add default via 192.168.1.1 dev br0
-
-# Test it
-$ ip addr show br0
-$ ip route show
+#### Create the OVS-Bridge and Vlans using nmcli- ***Direct Usage!!!***
 ```
-##### using a virtual NIC
-```bash
-# Create a new Bridge
-$ ovs-vsctl add-br br-int
+#!/bin/bash
 
-# Create a Virtual Interface
-$ ip link add name veth0-a type macvlan mode bridge
+nmcli conn add type ovs-bridge conn.interface vlanbr_connection autoconnect yes  
+nmcli conn add type ovs-port conn.interface connection_port master  vlanbr_connection autoconnect yes
 
-# Add the Virtual Interface to the Bridge
-$ ovs-vsctl add-port br-int veth0-a
+nmcli conn add type ovs-interface conn.interface vlanbr master connection_port autoconnect yes ipv4.method auto
+nmcli conn add type ovs-port conn.interface interface_port master vlanbr_connection autoconnect yes
+nnmcli conn down vlanbr
+nmcli connection modify ovs-slave-vlanbr ipv4.method static ipv4.address 192.168.1.100/24 ipv4.gateway 192.168.1.1
 
-# Activate the virtual Interface
-$ ip link set veth0-a up
+nmcli c add type ovs-port conn.interface vlan1 master vlanbr_connection ovs-port.tag 1 con-name vlan-port-1
+nmcli c add type ovs-interface slave-type ovs-port conn.interface vlan1 master vlan-port-1 con-name vlan-con-1 ipv4.method static ipv4.address 192.168.7.1/24
+nmcli c add type ovs-port conn.interface vlan2 master vlanbr_connection ovs-port.tag 2 con-name vlan-port-2
+nmcli c add type ovs-interface slave-type ovs-port conn.interface vlan2 master vlan-port-2 con-name vlan-con-2 ipv4.method static ipv4.address 192.168.8.1/24
 
-# Configure the IP Address
-$ ip addr add 192.168.1.100/24 dev veth0-a
-```
-#### Add the Port to our Virtual NIC
-- make sure not to use the ip of your physical NIC here
-```bash
-# Add the vlans
-$ ovs-vsctl add-port br-int vlan1 tag=1 -- set interface vlan1 type=internal
-$ ovs-vsctl add-port br-int vlan1 tag=2 -- set interface vlan2 type=internal
-
-# Add the Ips to the vlans
-$ ip addr add 192.168.1.1/24 dev vlan1
-$ ip addr add 192.168.2.1/24 dev vlan2
-
-# Start the Vlans/tap interfaces
-$ ip link set vlan1 up
-$ ip link set vlan2 up
+nmcli conn add type ethernet conn.interface enp2s0 master interface_port autoconnect yes && ip addr flush dev enp2s0 && nmcli con up ovs-slave-enp2s0 && ip addr add 192.168.1.100/24 dev vlanbr
 ```
 #### Create libvirt vlan-aware virtual network
 You can either use the cli or the virt-manager UI.<br>
