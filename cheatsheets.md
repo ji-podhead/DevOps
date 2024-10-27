@@ -180,12 +180,12 @@ we will create 2 tagged vlans without a  wlan aware switch
 ![grafik](https://github.com/user-attachments/assets/0d634ad0-6bc5-4048-9b77-0bc85e45f04a)
 ****image source: [openvswitch](https://docs.openvswitch.org/en/latest/howto/vlan/)****
 
-As you cans ee in the image, we have 2 NIC's in this setup.<br>
+As you can see in the image, we have 2 NIC's in this setup.<br>
 This is required if you want to make sure not to loose your connection (like ssh) since your physical network interface will be the slave of the ovs-bridge.<br>
 You cant have duplicated IP's on different Interfaces at the same time.<br>
 So if you use your main NIC as both your Management- and Data Network, you need to delete & flush its IP, as well as setting it to 0.0.0.0/0.<br>
 Thats why you can loose your ssh connection and it might require you to access the machine directly.  However i wrote a script and [Ansible Collection](https://galaxy.ansible.com/ui/repo/published/ji_podhead/ovs_bridge/)
-
+   
  #### install the requirements
  
  ```bash
@@ -245,6 +245,54 @@ nmcli con down ovs-slave-ovsbr ovs-bridge-ovsbr && nmcli con up enp2s0
 ```
 nmcli con up ovs-slave-ovsbr ovs-bridge-ovsbr && nmcli con down enp2s0
 ```
+
+#### Create libvirt vlan-aware virtual network
+You can either use the cli or the virt-manager UI.<br>
+However you will need to edit the XML manually in virt-manager, so make sure to allow this in the settings.<br>
+<br>
+Keep in mind that my collection will do this for you automatically! Anyway, here is how you do it manually!
+edit the XML accordingly:
+```xml
+<network connections="1">
+  <name>br0</name>
+  <uuid><your uuid></uuid>
+  <forward mode="bridge"/>
+  <bridge name="<your Virtual Network>" />
+  <virtualport type="openvswitch"/>
+  <portgroup name="vlan-1" default="yes">
+  </portgroup>
+  <portgroup name="vlan-2">
+    <vlan>
+      <tag id="2"/>
+    </vlan>
+  </portgroup>
+  <portgroup name="vlan-all">
+    <vlan trunk="yes">
+      <tag id="1"/>
+      <tag id="2"/>
+    </vlan>
+  </portgroup>
+</network>
+```
+#### Add the virtual network to your VM
+Add the Network in your VM Configuration and edit the XML accordingly:
+```xml
+<interface type="bridge">
+  <mac address= "<your mac>" />
+  <source bridge= "<your Virtual Network>"/>
+  <virtualport type="openvswitch">
+    <parameters interfaceid= "<your interface id>" />
+  </virtualport>
+  <model type="virtio"/>
+  <address type="pci" domain="0x0000" bus="0x00" slot="0x02" function="0x0"/>
+</interface>
+```
+
+
+##### sources
+- openvswitch: [vlans](https://docs.openvswitch.org/en/latest/faq/vlan/)
+- openvswitch: [isolate vm traffic](https://docs.openvswitch.org/en/latest/howto/vlan/)
+
 #### Create OVS-Bridge and tagged Vlans using my [Ansible Collection](https://galaxy.ansible.com/ui/repo/published/ji_podhead/ovs_bridge/)
 
 ##### Install my Collection
@@ -391,52 +439,7 @@ $ ifconfig
             TX packets 189  bytes 33714 (32.9 KiB)
             TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
     ```
-    
-#### Create libvirt vlan-aware virtual network
-You can either use the cli or the virt-manager UI.<br>
-However you will need to edit the XML manually in virt-manager, so make sure to allow this in the settings.<br>
-<br>
-edit the XML accordingly:
-```xml
-<network connections="1">
-  <name>br0</name>
-  <uuid><your uuid></uuid>
-  <forward mode="bridge"/>
-  <bridge name="<your Virtual Network>" />
-  <virtualport type="openvswitch"/>
-  <portgroup name="vlan-1" default="yes">
-  </portgroup>
-  <portgroup name="vlan-2">
-    <vlan>
-      <tag id="2"/>
-    </vlan>
-  </portgroup>
-  <portgroup name="vlan-all">
-    <vlan trunk="yes">
-      <tag id="1"/>
-      <tag id="2"/>
-    </vlan>
-  </portgroup>
-</network>
-```
-#### Add the virtual network to your VM
-Add the Network in your VM Configuration and edit the XML accordingly:
-```xml
-<interface type="bridge">
-  <mac address= "<your mac>" />
-  <source bridge= "<your Virtual Network>"/>
-  <virtualport type="openvswitch">
-    <parameters interfaceid= "<your interface id>" />
-  </virtualport>
-  <model type="virtio"/>
-  <address type="pci" domain="0x0000" bus="0x00" slot="0x02" function="0x0"/>
-</interface>
-```
-
-##### sources
-- openvswitch: [vlans](https://docs.openvswitch.org/en/latest/faq/vlan/)
-- openvswitch: [isolate vm traffic](https://docs.openvswitch.org/en/latest/howto/vlan/)
-
+ 
 ---
 ## Enter the matrix
 when your bored and listening to nice music, try this:
