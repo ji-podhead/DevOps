@@ -174,7 +174,7 @@ we will create 2 tagged vlans without a  wlan aware switch
 
 ----
 
-### isolate vm traffic using tagged vlans and ovs bridges
+### isolate vm/container traffic using tagged vlans and ovs bridges
 
 #### Management and Data Network
 ![grafik](https://github.com/user-attachments/assets/0d634ad0-6bc5-4048-9b77-0bc85e45f04a)
@@ -198,22 +198,55 @@ $ sudo dnf install NetworkManager-ovs
 ```
 #!/bin/bash
 
-nmcli conn add type ovs-bridge conn.interface vlanbr_connection autoconnect yes  
-nmcli conn add type ovs-port conn.interface connection_port master  vlanbr_connection autoconnect yes
+nmcli conn add type ovs-bridge conn.interface vlanbr autoconnect yes  
+nmcli conn add type ovs-port conn.interface connection_port master  vlanbr autoconnect yes
 
 nmcli conn add type ovs-interface conn.interface vlanbr master connection_port autoconnect yes ipv4.method auto
-nmcli conn add type ovs-port conn.interface interface_port master vlanbr_connection autoconnect yes
+nmcli conn add type ovs-port conn.interface interface_port master vlanbr autoconnect yes
 nnmcli conn down vlanbr
 nmcli connection modify ovs-slave-vlanbr ipv4.method static ipv4.address 192.168.1.100/24 ipv4.gateway 192.168.1.1
 
-nmcli c add type ovs-port conn.interface vlan1 master vlanbr_connection ovs-port.tag 1 con-name vlan-port-1
+nmcli c add type ovs-port conn.interface vlan1 master vlanbr ovs-port.tag 1 con-name vlan-port-1
 nmcli c add type ovs-interface slave-type ovs-port conn.interface vlan1 master vlan-port-1 con-name vlan-con-1 ipv4.method static ipv4.address 192.168.7.1/24
-nmcli c add type ovs-port conn.interface vlan2 master vlanbr_connection ovs-port.tag 2 con-name vlan-port-2
+nmcli c add type ovs-port conn.interface vlan2 master vlanbr ovs-port.tag 2 con-name vlan-port-2
 nmcli c add type ovs-interface slave-type ovs-port conn.interface vlan2 master vlan-port-2 con-name vlan-con-2 ipv4.method static ipv4.address 192.168.8.1/24
 
 nmcli conn add type ethernet conn.interface enp2s0 master interface_port autoconnect yes && ip addr flush dev enp2s0 && nmcli con up ovs-slave-enp2s0 && ip addr add 192.168.1.100/24 dev vlanbr
 ```
+   - make sure to use the same name for the ovs-bridge connection and ovs-bridge-interface!
+
+#### useful commands
+- openvswitch overview: `ovs-vsctl show`
+- list ovs-bridges: `ovs-vsctl list-br`
+- list ovs-ports: `ovs-vsctl list-ports <bridge>`
+- list ovs-interfaces: `ovs-vsctl list-ifaces <bridge>`
+- delete bridge: `ovs-vsctl del-br <bridge>`
+- add a bridge: `ovs-vsctl add-br ovsbr`
+- add a port: `ovs-vsctl add-port <ovs-bridge> <nic>`
+  - ***this will add your physical nic to the bridge so you might loose ssh connection!***
+- add a vlan: `ovs-vsctl add-port br0 <vlan> tag=<vlan tag> -- set interface <vlan> type=internal`  
+- list all connections: `nmcli con show`
+- describe connections: `nmcli show <connection>`
+- set connection up/down: `nmcli con down/up <connection>`
+- edit a configuration via cli tool: `nmcli edit <connection>`
+  - *for example you can set the ip  after you enter the menu like this:*
+    - `set ipv4.address 192.168.1.1`
+    - `save`
+    - `quit` 
+- edit a configuration using a single command:
+ - `nmcli connection modify ovs-slave-<ovs_bridge> ipv4.method static ipv4.address <ipv4_address> ipv4.gateway <ipv4_gateway>`
+    - here we are setting the ip of the ovs-bridge interface
+##### Switch between OVS-Bridge and your standart Connection without loosing ssh-connection
+###### turn of ovs-bridge
+```bash
+nmcli con down ovs-slave-ovsbr ovs-bridge-ovsbr && nmcli con up enp2s0
+```
+###### turn on ovs-bridge
+```
+nmcli con up ovs-slave-ovsbr ovs-bridge-ovsbr && nmcli con down enp2s0
+```
 #### Create OVS-Bridge and tagged Vlans using my [Ansible Collection](https://galaxy.ansible.com/ui/repo/published/ji_podhead/ovs_bridge/)
+
 ##### Install my Collection
 ```bash
  ansible-galaxy collection install ji_podhead.ovs_bridge
@@ -249,7 +282,7 @@ nmcli conn add type ethernet conn.interface enp2s0 master interface_port autocon
   vars:
     physical_nic: enp2s0
     interface_port: interface_port
-    ovs_bridge_connection: vlanbr_connection
+    ovs_bridge_connection: vlanbr
     connection_port: connection_port
     ovs_bridge_interface: vlanbr # the name of the interface of our ovs-bridge
     ipv4_address: 192.168.1.100/24 # the ip of the ovs-bridge
@@ -258,14 +291,14 @@ nmcli conn add type ethernet conn.interface enp2s0 master interface_port autocon
     autoconnect: "yes"
     vlans:
           - interface: vlan1
-            master: vlanbr_connection
+            master: vlanbr
             tag: 1
             port: vlan-port-1
             connection: vlan-con-1
             ipv4_method: static
             ipv4_address: "192.168.7.1/24"
           - interface: vlan2
-            master: vlanbr_connection
+            master: vlanbr
             tag: 2
             port: vlan-port-2
             connection: vlan-con-2
@@ -299,7 +332,7 @@ $ nmcli con show
     ovs-slave-vlanbr              2fa5810e-394d-4f76-852e-b8829d2adacb  ovs-interface  vlanbr            
     vlan-con-1                    2c016716-11d9-4ec1-a799-0699d7670f2f  ovs-interface  vlan1             
     vlan-con-2                    5d2904c1-5198-4e99-bd92-6c9e2ec0f09d  ovs-interface  vlan2             
-    ovs-bridge-vlanbr_connection  329cedba-8796-4ab1-b0a4-ce2d4daf3f69  ovs-bridge     vlanbr_connection 
+    ovs-bridge-vlanbr  329cedba-8796-4ab1-b0a4-ce2d4daf3f69  ovs-bridge     vlanbr 
     ovs-slave-connection_port     195530fc-5c86-4f57-b7e7-0d516a0cc49e  ovs-port       connection_port   
     ovs-slave-enp2s0              84f158db-0d2d-4f6b-b4c6-3e12e69b57c2  ethernet       enp2s0            
     ovs-slave-interface_port      759d1d97-444d-45d2-baa9-feb4227a6831  ovs-port       interface_port    
