@@ -245,7 +245,26 @@ nmcli con down ovs-slave-ovsbr ovs-bridge-ovsbr && nmcli con up enp2s0
 ```
 nmcli con up ovs-slave-ovsbr ovs-bridge-ovsbr && nmcli con down enp2s0
 ```
+#### Container and vlan-aware networks
+This is actually quite easy, all you need to do is to attach a maclavan network to the container.<br>
+Keep in mind that docker can duplicate/spoof existing ip addresses if you use the default settings.<br>
+In my case, i use static ipam so, ill just add ip adresses to the containers directly, or maybe i will use my routers dhcp in the future, but i leave it up to you to take care of your approach.
 
+- create and attach a maclavan network to a vlan interface
+   ```bash
+   $ docker network create -d macvlan -o parent= <vlan interface> --subnet <subnet> <container> 
+   ```
+- start a container using your docker network
+   ```bash
+    docker run --network <maclavan network> --cap-add=NET_RAW -dit <container image>
+   ```
+   - `--cap-add=NET_RAW` allows ping
+   - `-dit` attaches a TTY
+- start a shell and test it out
+  ```bash
+  docker exec -it <container> /bin/bash
+  ```
+- inspect, list and check if network is existing: `docker network inspect <network>`, `docker network ls`, `docker network exists <network>`   
 #### Create libvirt vlan-aware virtual network
 You can either use the cli or the virt-manager UI.<br>
 However you will need to edit the XML manually in virt-manager, so make sure to allow this in the settings.<br>
