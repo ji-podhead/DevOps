@@ -173,6 +173,43 @@ we will create 2 tagged vlans without a  wlan aware switch
 ```
 
 ----
+### Debug VLAN-traffic using wireshark
+#### Install tcpdump on openwrt and capture packets with wireshark via ssh
+you can install packages using the gui (system -> software ), or via terminal of course.
+- update your packagemanager
+> ```bash
+> opkg update
+> ```
+- install tcpdump
+> ```
+> opkg install tcpdump
+>```
+- try if it works
+> ```bash
+> tcpdump -D
+> ```
+> - if this fails with an error like this:
+>   ```yaml
+>   
+>   	Error by extcap pipe: Error relocating /usr/bin/tcpdump: pcap_open: symbol not found
+>		Error relocating /usr/bin/tcpdump: pcap_findalldevs_ex: symbol not found
+>
+>   ```
+>   - try to reinstall libcap1 with force:
+>     ```bash
+>       opkg install --force-reinstall libpcap1
+>     ```
+- capture the packets using wireshark & tcdump via ssh:
+> ```bash
+>    ssh root@192.168.1.1 tcpdump -i eth0 -U -s0 -w - 'not port 22' | sudo wireshark -k -i -
+> ```
+> - keep in mind to enter the password after executing the command 
+> - should output something like this:
+>   ```bash
+>   root@192.168.1.1's password: 06:24:03.992     Main Warn QStandardPaths: XDG_RUNTIME_DIR not set, defaulting to '/tmp/runtime-root'
+>
+>    tcpdump: listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+>   ```
 
 ### isolate vm/container traffic using tagged vlans and ovs bridges
 
