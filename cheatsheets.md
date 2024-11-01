@@ -211,6 +211,28 @@ you can install packages using the gui (system -> software ), or via terminal of
 >    tcpdump: listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
 >   ```
 
+#### generate vlan traffic to check response
+- on kali we will use `arping -i <interface> <target_ip> -S <source_ip>`
+  - i think it doesnt actually matter if the source ip is in the targets subnet cause we will use arp-request  
+- here we will send a arp ping command from the vm that is attached to a vlan interface
+   - tag: 2
+   - subnet 192.168.20.0/24
+  >  ![image](https://github.com/user-attachments/assets/c49e7eaa-0727-492d-ae41-b483ef0e213f)
+  > - notice that we are seing traffic on our vlan in opensense as well as on our vlan trunk interface (parent)
+  > - arp ping will basically send a arp-request via broadcast address,hence we need a source address, or we need to brute force
+  > - wireshark filter is set to `eth.type == 0x0806 || vlan.id == 2` for arp traffic with vlan tag 2
+  > - you can tell that its using vlan tag 2 because it says so in the ethernet frame
+- arp ping using the ovs-bridge host and vlan interface
+  ```bash
+  $ arping -I dns  192.168.20.1
+  ```
+>    - ```bash 
+>		ARPING 192.168.20.1 von 200.0.2.1 dns
+>		Unicast antworten von 192.168.20.1 [52:54:00:ED:B9:F9]  1.497ms
+>		Unicast antworten von 192.168.20.1 [52:54:00:ED:B9:F9]  1.270ms
+>		Unicast antworten von 192.168.20.1 [52:54:00:ED:B9:F9]  0.981ms
+>       ```
+  
 ### isolate vm/container traffic using tagged vlans and ovs bridges
 
 #### Management and Data Network
@@ -495,7 +517,31 @@ $ ifconfig
             TX packets 189  bytes 33714 (32.9 KiB)
             TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
     ```
- 
+
+#### opensense with openvswitch and tagged vlans
+i tried to get openwrt to run with vlans and a single nic. i looked up the manual and it says that you can just add a bridge, then activate the vlans, but my dhcp did not respond.
+I checked the traffic using wireshark and the packets did indeeed arrive, but no response, so now ill just use my opensense vm for dhcp.
+
+- create a vlan trunk including all your vlans that need dhcp, or should get routed
+- add both the the default and our trunk to our opensense vm
+- we wont use the trunk for the other vms to seperate the layer2 traffic
+- set up the interfaces and dhcp in opensense
+  - use dhcp for the main lan ip, so we get an ip from our router 
+  - activate the trunk interface - no ip needed
+  - create the vlans (Interfaces -> other types -> vlans )
+  - assign interfaces to the vlans ( Interfaces -> Assignments )
+  - add a *pass firewall rule* ( firewall -> rules )
+  - activate the vlan interfaces and assign a static ip
+  - go to the dhcp of your vlans, assign a subnet and start the service
+
+ - after we allow traffic in our trunk port we should now see traffic in opensense when we restart the NetworkManager or use the Broadcast Address
+  > ![image](https://github.com/user-attachments/assets/346e4ea9-d8e6-479b-9448-df531f341042)
+  > i assigned an interface with vlan tag2 via  libvirt
+  > notice that i used `vlan.id == 2` filter in wireshark
+
+- our vlan2 dhcp will respond and assign a ip
+>   ![image](https://github.com/user-attachments/assets/114ef152-53c9-460c-bc94-9fd2fcf08bbc)
+
 ---
 ## Enter the matrix
 when your bored and listening to nice music, try this:
