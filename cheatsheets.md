@@ -1,7 +1,7 @@
 # cheatsheets & Unreleased Guides
 ## Symbolik to duplicate README.md for package in subfolder of repo
 ```bash
- $ ln -f ./README.md /home/ji/Dokumente/podshop-org/opnsense-helper/python/README.md
+ $ ln -f ./README.md ./subfolder/README.md
 ```
 
 ## Network Segmentation, Firewall & Intrusion Detection
