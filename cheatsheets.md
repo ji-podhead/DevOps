@@ -1,9 +1,11 @@
 # cheatsheets & Unreleased Guides
+## Symbolik to duplicate README.md for package in subfolder of repo
+```bash
+ $ ln -f ./README.md /home/ji/Dokumente/podshop-org/opnsense-helper/python/README.md
+```
+
 ## Network Segmentation, Firewall & Intrusion Detection
 So i wanted to create a secure infrastructure in my datacenter / private cloud.... that lead me to this article
-
-
-
 
 
 ### Why you should'nt underestimate the power of layer2 and why you should isolate your VM Traffic
